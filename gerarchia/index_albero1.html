@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>D3 Gene Ontology Tree</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Importa D3.js -->
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+      overflow-x: hidden; /* Evita scorrimento orizzontale indesiderato */
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    svg {
+      width: 100vw; /* Imposta la larghezza dell'albero su tutta la finestra */
+      height: auto; /* Altezza automatica per mantenere le proporzioni */
+      max-height: 90vh; /* Altezza massima in base alla finestra */
+    }
+  </style>
+</head>
+<body>
+  <h1>Divisione geni secondo Gene Ontology</h1> <!-- Titolo -->
+  <svg id="treeSVG"></svg>
+
+  <script>
+    const data = {
+      "name": "GeneOntology",
+      "children": [
+        {
+          "name": "FunzioniMolecolari",
+          "children": [
+            {
+              "name": "AttivitàEnzimatica",
+              "children": [
+                { "name": "ALDH2", "value": 520 },
+                { "name": "G6PD", "value": 480 },
+                { "name": "MAOA", "value": 430 }
+              ]
+            },
+            {
+              "name": "LegameMolecolare",
+              "children": [
+                { "name": "TP53", "value": 570 },
+                { "name": "BRCA1", "value": 490 },
+                { "name": "MYC", "value": 450 },
+                { "name": "SP1", "value": 420 }
+              ]
+            },
+            {
+              "name": "AttivitàCatalitica",
+              "children": [
+                { "name": "CYBA", "value": 500 },
+                { "name": "CYBB", "value": 460 },
+                { "name": "HPRT1", "value": 440 },
+                { "name": "TYMS", "value": 410 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ComponentiCellulari",
+          "children": [
+            {
+              "name": "MembranaCellulare",
+              "children": [
+                { "name": "EGFR", "value": 600 },
+                { "name": "ITGB1", "value": 560 }
+              ]
+            },
+            {
+              "name": "Citoplasma",
+              "children": [
+                { "name": "ACTB", "value": 490 },
+                { "name": "GAPDH", "value": 450 }
+              ]
+            },
+            {
+              "name": "Nucleo",
+              "children": [
+                { "name": "RB1", "value": 580 },
+                { "name": "E2F1", "value": 540 },
+                { "name": "CDKN2A", "value": 520 },
+                { "name": "RPL11", "value": 480 },
+                { "name": "RPL5", "value": 460 }
+              ]
+            },
+            {
+              "name": "Mitocondrio",
+              "children": [
+                { "name": "MT-ND1", "value": 620 },
+                { "name": "MT-CO1", "value": 590 },
+                { "name": "MT-CYB", "value": 550 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ProcessiBiologici",
+          "children": [
+            {
+              "name": "Metabolismo",
+              "children": [
+                {
+                  "name": "MetabolismoLipidico",
+                  "children": [
+                    { "name": "FASN", "value": 530 },
+                    { "name": "ACACA", "value": 490 }
+                  ]
+                },
+                {
+                  "name": "MetabolismoCarboidrati",
+                  "children": [
+                    { "name": "HK1", "value": 460 },
+                    { "name": "PFK1", "value": 430 },
+                    { "name": "PKM", "value": 400 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CicloCellulare",
+              "children": [
+                {
+                  "name": "Mitosi",
+                  "children": [
+                    { "name": "CCNB1", "value": 470 },
+                    { "name": "CDC20", "value": 440 }
+                  ]
+                },
+                {
+                  "name": "Meiosi",
+                  "children": [
+                    { "name": "SYCP3", "value": 420 },
+                    { "name": "DMC1", "value": 410 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "RispostaImmunitaria",
+              "children": [
+                {
+                  "name": "RispostaInnata",
+                  "children": [
+                    { "name": "TLR4", "value": 480 },
+                    { "name": "MYD88", "value": 450 }
+                  ]
+                },
+                {
+                  "name": "RispostaAdattativa",
+                  "children": [
+                    { "name": "HLA-DRA", "value": 500 },
+                    { "name": "CD4", "value": 470 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+    function createTree(data) {
+      const width = window.innerWidth; // Usa tutta la larghezza della finestra
+      const root = d3.hierarchy(data);
+      const dx = 20;
+      const dy = width / (root.height + 1);
+      const tree = d3.cluster().nodeSize([dx, dy]);
+      
+      tree(root);
+
+      let x0 = Infinity;
+      let x1 = -x0;
+      root.each(d => {
+        if (d.x > x1) x1 = d.x;
+        if (d.x < x0) x0 = d.x;
+      });
+
+      const height = x1 - x0 + dx * 2;
+
+      const svg = d3.select("#treeSVG")
+          .attr("width", width)
+          .attr("height", height)
+          .attr("viewBox", [-dy / 3, x0 - dx, width, height])
+          .attr("style", "font: 14px sans-serif;");
+
+      // Crea una scala colori per le etichette dei nodi
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const link = svg.append("g")
+          .attr("fill", "none")
+          .attr("stroke", "#555")
+          .attr("stroke-opacity", 0.4)
+          .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(root.links())
+        .join("path")
+          .attr("d", d3.linkHorizontal()
+              .x(d => d.y)
+              .y(d => d.x));
+
+      const node = svg.append("g")
+          .attr("stroke-linejoin", "round")
+          .attr("stroke-width", 3)
+        .selectAll("g")
+        .data(root.descendants())
+        .join("g")
+          .attr("transform", d => `translate(${d.y},${d.x})`);
+
+      node.append("circle")
+          .attr("fill", d => d.children ? "#555" : "#999")
+          .attr("r", 5);
+
+      node.append("text")
+          .attr("dy", "0.31em")
+          .attr("x", d => d.children ? -8 : 8)
+          .attr("text-anchor", d => d.children ? "end" : "start")
+          .text(d => d.data.name)
+          .attr("fill", d => colorScale(d.depth)) // Colore in base alla profondità
+          .attr("stroke", "white")
+          .attr("paint-order", "stroke");
+    }
+
+    // Inizializza il grafico dell'albero
+    createTree(data);
+  </script>
+</body>
+</html>

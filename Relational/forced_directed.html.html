@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Interazioni proteiche tra geni</title>
+    <style>
+        body {
+            cursor: pointer;
+        }
+        svg text {
+            font-size: 8px;
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center;">Interazioni proteiche tra geni</h1>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script>
+// Dati CSV in formato testo
+const dataText = `source,target,value
+TP53,EGFR,5
+TP53,BRCA1,8
+BRCA1,ATM,7
+BRCA1,AKT1,6
+ATM,TP53,9
+ATM,EGFR,4
+EGFR,AKT1,10
+AKT1,PIK3CA,5
+PIK3CA,TP53,7
+PIK3CA,MDM2,3
+TP53,MDM2,8
+MDM2,CDKN1A,6
+CDKN1A,CCND1,2
+CCND1,CDK4,11
+CDK4,RB1,4
+RB1,E2F1,7
+E2F1,MYC,6
+MYC,CCNE1,8
+CCNE1,CDK2,9
+CDK2,TP53,3
+APC,CTNNB1,6
+CTNNB1,MYC,5
+MYC,JUN,8
+JUN,FOS,9
+FOS,EGFR,4
+EGFR,VEGFA,6
+VEGFA,KDR,5
+BAX,TP53,6`;
+
+// Parsing dei dati
+const data = d3.csvParse(dataText);
+
+// Creazione dei nodi e dei link
+const nodes = Array.from(new Set(data.flatMap(d => [d.source, d.target])), id => ({ id }));
+const links = data.map(d => ({ source: d.source, target: d.target, value: +d.value }));
+
+// Dimensioni del grafico
+const width = 800;
+const height = 600;
+
+// Creazione del SVG
+const svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+// Forza del grafo
+const simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(d => 100 / d.value))
+    .force("charge", d3.forceManyBody().strength(-300))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+// Aggiungi i link (linee) tra i nodi
+const link = svg.append("g")
+    .attr("stroke", "#999")
+    .attr("stroke-opacity", 0.6)
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("stroke-width", d => Math.sqrt(d.value));
+
+// Aggiungi i nodi (cerchi) per ciascun gene
+const node = svg.append("g")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 1.5)
+    .selectAll("circle")
+    .data(nodes)
+    .join("circle")
+    .attr("r", 5)
+    .attr("fill", "#69b3a2")
+    .call(drag(simulation));
+
+// Etichette per ciascun nodo
+const label = svg.append("g")
+    .selectAll("text")
+    .data(nodes)
+    .join("text")
+    .attr("dy", -3)
+    .attr("dx", 6)
+    .text(d => d.id);
+
+// Aggiorna posizione dei nodi e dei link durante la simulazione
+simulation.on("tick", () => {
+    link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+    node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+    label
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+});
+
+// Funzione per drag dei nodi
+function drag(simulation) {
+    return d3.drag()
+        .on("start", event => {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+        })
+        .on("drag", event => {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        })
+        .on("end", event => {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        });
+}
+</script>
+</body>
+</html>
