@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+}
+body, html {
+    overflow-x: hidden; /* Disabilita lo scorrimento orizzontale */
+}
+.main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: hidden; 
+}
+.left-container {
+    width: 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.right-container {
+    width: 45%;
+}
+.buttons-container {
+    margin-top: 10px;
+    text-align: center;
+}
+.chord, .tree-chart, .extra-info {
+    width: 400px;
+    height: 400px;
+}
+.legend {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.legend-item {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+.titles{
+    font-size: 10px;
+}
+.begin_hidden{
+    display: none;
+}

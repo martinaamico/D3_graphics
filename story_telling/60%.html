@@ -144,7 +144,7 @@
 
             treemapSvg.selectAll("rect")
                 .data(root.leaves())
-                .enter()
+        	    .enter()
                 .append("rect")
                 .attr("x", d => d.x0)
                 .attr("y", d => d.y0)
