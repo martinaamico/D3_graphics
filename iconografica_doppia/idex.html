@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<title>GENES ANALYSIS</title>
+    <!--VERSIONE 7 DI D3 PER GRAFICO AD ALBERO -->
+    <script src="http://d3js.org/d3.v7.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+    <link href="style.css" rel='stylesheet'>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-container">
+            <h1>RELAZIONI PROTEICHE</h1>
+            <h2>tra geni</h2>
+            <div id="chord" class="chord"></div>
+            <div class="legend" id="legend"></div>
+            <div class="buttons-container">
+                <button id="skip" class="sideButton">SKIP INTRO</button>
+                <button id="reset" class="sideButton begin_hidden">RESET</button>
+                <button id="playPause" class="sideButton begin_hidden">PAUSE</button><!--mostrare solo dopo let's start-->
+                <button id="clicker" class="sideButton">LET'S START</button>
+                <button id="advance" class="sideButton begin_hidden">ADVANCE</button><!--mostrare solo dopo let's start-->
+                <button id="back" class="sideButton begin_hidden">BACK</button><!--mostrare solo dopo let's start-->
+                <button id="dataset" class="sideButton">DATASET</button>
+            </div>
+        </div>
+
+        <div class="right-container">
+            <h1>Divisione geni secondo Gene Ontology</h1> <!-- Titolo -->
+            <div id="tree-chart" class="tree-chart"></div>
+            <h2>Informazione gene specifico selezionato</h2>
+            <div id="extra-info" class="extra-info"></div>
+        </div>
+    </div>
+    <script src="tree.js"></script>
+    <!--<script src="chord.js"></script>-->
+    <script>
+        // Inizializza il grafico ad albero con i dati
+        //initializeTreeChart(data);
+
+        // Funzione per gestire il dataset nella sezione extra-info
+        /*function showNodeInfo(nodeData) {
+            const infoContainer = document.getElementById("extra-info");
+            infoContainer.innerHTML = `
+                <h3>${nodeData.name}</h3>
+                ${nodeData.value ? `<p>Value: ${nodeData.value}</p>` : ""}
+            `;
+        }
+
+        // Associa l'evento click ai nodi dell'albero per mostrare i dettagli
+        d3.selectAll(".node").on("click", function(event, d) {
+            showNodeInfo(d.data);
+        });
+        */
+        /*CREAZIONE GRAFICO A CORDE
+        //initializeChordChart(data);
+
+        /*function findNodeByName(name, node) {
+            if (node.data.name === name) return node; // Nodo trovato
+            if (node.children) {
+                for (const child of node.children) {
+                    const result = findNodeByName(name, child);
+                    if (result) return result; // Continua la ricerca nei figli
+                }
+            }
+            return null; // Nodo non trovato
+        }*/
+    </script>
+
+
+
+        
+    </script>
+</body>
+
+
+

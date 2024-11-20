@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizzazioni D3.js</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .left-container {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .right-container {
+            width: 45%;
+        }
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .buttons-container {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .chord, .arc-diagram, .treemap {
+            width: 400px;
+            height: 400px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .legend-item {
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Sinistra -->
+    <div class="left-container">
+        <div id="chord" class="chord"></div>
+        <div class="legend" id="legend"></div>
+        <div class="buttons-container">
+            <button onclick="createTreemap(treemapDataSets[0])">Dataset 1</button>
+            <button onclick="createTreemap(treemapDataSets[1])">Dataset 2</button>
+            <button onclick="createTreemap(treemapDataSets[2])">Dataset 3</button>
+            <button onclick="createTreemap(treemapDataSets[3])">Dataset 4</button>
+        </div>
+    </div>
+
+    <!-- Destra -->
+    <div class="right-container">
+        <div id="arc-diagram" class="arc-diagram"></div>
+        <div id="treemap" class="treemap"></div>
+    </div>
+</div>
+<script>
+// Dataset per le Treemaps
+const treemapDataSets = [
+    {
+        "name": "Root1",
+        "children": [
+            { "name": "A1", "value": 100 },
+            { "name": "B1", "value": 200 },
+            { "name": "C1", "children": [{ "name": "C1-1", "value": 50 }, { "name": "C1-2", "value": 150 }] }
+        ]
+    },
+    {
+        "name": "Root2",
+        "children": [
+            { "name": "A2", "value": 300 },
+            { "name": "B2", "value": 100 },
+            { "name": "C2", "children": [{ "name": "C2-1", "value": 200 }, { "name": "C2-2", "value": 50 }] }
+        ]
+    },
+    {
+        "name": "Root3",
+        "children": [
+            { "name": "A3", "value": 150 },
+            { "name": "B3", "value": 150 },
+            { "name": "C3", "children": [{ "name": "C3-1", "value": 80 }, { "name": "C3-2", "value": 120 }] }
+        ]
+    },
+    {
+        "name": "Root4",
+        "children": [
+            { "name": "A4", "value": 200 },
+            { "name": "B4", "value": 50 },
+            { "name": "C4", "children": [{ "name": "C4-1", "value": 100 }, { "name": "C4-2", "value": 75 }] }
+        ]
+    }
+];
+
+// Dataset per il Grafico a Corde
+const chordData = [
+    [0, 2, 3, 4],
+    [2, 0, 5, 1],
+    [3, 5, 0, 6],
+    [4, 1, 6, 0]
+];
+
+// Funzione per creare la Treemap
+function createTreemap(data) {
+    d3.select("#treemap").selectAll("svg").remove();
+    const treemapSvg = d3.select("#treemap")
+        .append("svg")
+        .attr("width", 400)
+        .attr("height", 400);
+
+    const treemap = d3.treemap().size([400, 400]).padding(1);
+    const root = d3.hierarchy(data).sum(d => d.value);
+    treemap(root);
+
+    treemapSvg.selectAll("rect")
+        .data(root.leaves())
+        .enter()
+        .append("rect")
+        .attr("x", d => d.x0)
+        .attr("y", d => d.y0)
+        .attr("width", d => d.x1 - d.x0)
+        .attr("height", d => d.y1 - d.y0)
+        .attr("fill", d => d3.schemeCategory10[d.depth])
+        .attr("stroke", "#ffffff");
+
+    treemapSvg.selectAll("text")
+        .data(root.leaves())
+        .enter()
+        .append("text")
+        .attr("x", d => d.x0 + 5)
+        .attr("y", d => d.y0 + 20)
+        .text(d => d.data.name)
+        .attr("font-size", "12px")
+        .attr("fill", "#000");
+}
+
+// --- Grafico a Corde ---
+const chordSvg = d3.select("#chord")
+    .append("svg")
+    .attr("width", 400)
+    .attr("height", 400)
+    .append("g")
+    .attr("transform", "translate(200,200)");
+
+const chord = d3.chord().padAngle(0.05)(chordData);
+const ribbon = d3.ribbon().radius(180);
+const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+chordSvg.selectAll("path")
+    .data(chord)
+    .enter()
+    .append("path")
+    .attr("d", ribbon)
+    .style("fill", d => color(d.target.index))
+    .style("stroke", d => d3.rgb(color(d.target.index)).darker());
+
+// Legenda
+const legendData = Array.from({ length: chord.groups.length }, (_, i) => ({
+    color: color(i),
+    label: `Gruppo ${i + 1}`
+}));
+
+const legend = d3.select("#legend");
+legendData.forEach(d => {
+    const item = legend.append("div").attr("class", "legend-item");
+    item.append("div")
+        .attr("class", "legend-color")
+        .style("background-color", d.color);
+    item.append("span").text(d.label);
+});
+
+// --- Arc Diagram ---
+function createArcDiagram() {
+    const svg = d3.select("#arc-diagram")
+        .append("svg")
+        .attr("width", 400)
+        .attr("height", 400);
+
+    // Esempio di nodi e archi
+    const nodes = [{ id: "A" }, { id: "B" }, { id: "C" }, { id: "D" }];
+    const links = [
+        { source: 0, target: 1 },
+        { source: 1, target: 2 },
+        { source: 2, target: 3 },
+        { source: 0, target: 3 }
+    ];
+
+    const x = d3.scalePoint().domain(nodes.map(d => d.id)).range([50, 350]);
+
+    svg.selectAll("line")
+        .data(links)
+        .enter()
+        .append("line")
+        .attr("x1", d => x(nodes[d.source].id))
+        .attr("x2", d => x(nodes[d.target].id))
+        .attr("y1", 200)
+        .attr("y2", 200)
+        .attr("stroke", "#888")
+        .attr("stroke-width", 2);
+
+    svg.selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.id))
+        .attr("cy", 200)
+        .attr("r", 10)
+        .attr("fill", "steelblue");
+
+    svg.selectAll("text")
+        .data(nodes)
+        .enter()
+        .append("text")
+        .attr("x", d => x(d.id))
+        .attr("y", 190)
+        .text(d => d.id)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px");
+}
+
+createArcDiagram();
+createTreemap(treemapDataSets[0]); // Carica la prima Treemap di default
+</script>
+
+</body>
+</html>

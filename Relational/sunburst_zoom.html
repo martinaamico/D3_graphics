@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>D3 Protein Sunburst</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Importa D3.js -->
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
+    }
+    h1 {
+      margin-bottom: 20px; /* Spazio tra il titolo e il grafico */
+    }
+    svg {
+      width: 80vmin; /* Larghezza massima in base alla dimensione della finestra */
+      height: 80vmin; /* Altezza massima in base alla dimensione della finestra */
+      max-width: 800px; /* Larghezza massima */
+      max-height: 800px; /* Altezza massima */
+    }
+  </style>
+</head>
+<body>
+  <h1>Divisione geni secondo Gene Ontology</h1> <!-- Titolo -->
+  <svg id="partitionSVG" viewBox="0 0 932 932"></svg>
+
+  <script>
+    // Dati JSON direttamente integrati
+    const data = {
+      "name": "GeneOntology",
+      "children": [
+        {
+          "name": "FunzioniMolecolari",
+          "children": [
+            {
+              "name": "AttivitàEnzimatica",
+              "children": [
+                { "name": "ALDH2", "value": 520 },
+                { "name": "G6PD", "value": 480 },
+                { "name": "MAOA", "value": 430 }
+              ]
+            },
+            {
+              "name": "LegameMolecolare",
+              "children": [
+                { "name": "TP53", "value": 570 },
+                { "name": "BRCA1", "value": 490 },
+                { "name": "MYC", "value": 450 },
+                { "name": "SP1", "value": 420 }
+              ]
+            },
+            {
+              "name": "AttivitàCatalitica",
+              "children": [
+                { "name": "CYBA", "value": 500 },
+                { "name": "CYBB", "value": 460 },
+                { "name": "HPRT1", "value": 440 },
+                { "name": "TYMS", "value": 410 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ComponentiCellulari",
+          "children": [
+            {
+              "name": "MembranaCellulare",
+              "children": [
+                { "name": "EGFR", "value": 600 },
+                { "name": "ITGB1", "value": 560 }
+              ]
+            },
+            {
+              "name": "Citoplasma",
+              "children": [
+                { "name": "ACTB", "value": 490 },
+                { "name": "GAPDH", "value": 450 }
+              ]
+            },
+            {
+              "name": "Nucleo",
+              "children": [
+                { "name": "RB1", "value": 580 },
+                { "name": "E2F1", "value": 540 },
+                { "name": "CDKN2A", "value": 520 },
+                { "name": "RPL11", "value": 480 },
+                { "name": "RPL5", "value": 460 }
+              ]
+            },
+            {
+              "name": "Mitocondrio",
+              "children": [
+                { "name": "MT-ND1", "value": 620 },
+                { "name": "MT-CO1", "value": 590 },
+                { "name": "MT-CYB", "value": 550 }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ProcessiBiologici",
+          "children": [
+            {
+              "name": "Metabolismo",
+              "children": [
+                {
+                  "name": "MetabolismoLipidico",
+                  "children": [
+                    { "name": "FASN", "value": 530 },
+                    { "name": "ACACA", "value": 490 }
+                  ]
+                },
+                {
+                  "name": "MetabolismoCarboidrati",
+                  "children": [
+                    { "name": "HK1", "value": 460 },
+                    { "name": "PFK1", "value": 430 },
+                    { "name": "PKM", "value": 400 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CicloCellulare",
+              "children": [
+                {
+                  "name": "Mitosi",
+                  "children": [
+                    { "name": "CCNB1", "value": 470 },
+                    { "name": "CDC20", "value": 440 }
+                  ]
+                },
+                {
+                  "name": "Meiosi",
+                  "children": [
+                    { "name": "SYCP3", "value": 420 },
+                    { "name": "DMC1", "value": 410 }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "RispostaImmunitaria",
+              "children": [
+                {
+                  "name": "RispostaInnata",
+                  "children": [
+                    { "name": "TLR4", "value": 480 },
+                    { "name": "MYD88", "value": 450 }
+                  ]
+                },
+                {
+                  "name": "RispostaAdattativa",
+                  "children": [
+                    { "name": "HLA-DRA", "value": 500 },
+                    { "name": "CD4", "value": 470 }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+
+    function createChart(data) {
+      const width = 928;
+      const height = width;
+      const radius = width / 6;
+
+      const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1));
+
+      const hierarchy = d3.hierarchy(data)
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value);
+      
+          const root = d3.partition()
+          .size([2 * Math.PI, hierarchy.height + 1])(hierarchy);
+      root.each(d => d.current = d);
+
+      const arc = d3.arc()
+          .startAngle(d => d.x0)
+          .endAngle(d => d.x1)
+          .padAngle(d => Math.min((d.x1 - d.x0) / 2, 0.005))
+          .padRadius(radius * 1.5)
+          .innerRadius(d => d.y0 * radius)
+          .outerRadius(d => Math.max(d.y0 * radius, d.y1 * radius - 1));
+
+      const svg = d3.select("#partitionSVG") // Seleziona l'SVG dall'HTML
+          .attr("viewBox", [-width / 2, -height / 2, width, width])
+          .style("font", "10px sans-serif");
+
+      const path = svg.append("g")
+        .selectAll("path")
+        .data(root.descendants().slice(1))
+        .join("path")
+          .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name); })
+          .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+          .attr("pointer-events", d => arcVisible(d.current) ? "auto" : "none")
+          .attr("d", d => arc(d.current));
+
+      path.filter(d => d.children)
+          .style("cursor", "pointer")
+          .on("click", clicked);
+
+      /*path.append("title")
+          .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${d.value}`);*/
+      const format = d3.format(",d");
+      path.append("title")
+      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${format(d.value)}`);
+
+      const label = svg.append("g")
+          .attr("pointer-events", "none")
+          .attr("text-anchor", "middle")
+          .style("user-select", "none")
+        .selectAll("text")
+        .data(root.descendants().slice(1))
+        .join("text")
+          .attr("dy", "0.35em")
+          .attr("fill-opacity", d => +labelVisible(d.current))
+          .attr("transform", d => labelTransform(d.current))
+          .text(d => d.data.name);
+
+      const parent = svg.append("circle")
+          .datum(root)
+          .attr("r", radius)
+          .attr("fill", "none")
+          .attr("pointer-events", "all")
+          .on("click", clicked);
+
+      function clicked(event, p) {
+        parent.datum(p.parent || root);
+
+        root.each(d => d.target = {
+          x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+          y0: Math.max(0, d.y0 - p.depth),
+          y1: Math.max(0, d.y1 - p.depth)
+      });
+
+      const t = svg.transition().duration(750);
+
+      path.transition(t)
+        .tween("data", d => {
+          const i = d3.interpolate(d.current, d.target);
+          return t => d.current = i(t);
+        })
+      .filter(function(d) {
+        return +this.getAttribute("fill-opacity") || arcVisible(d.target);
+      })
+        .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+        .attr("pointer-events", d => arcVisible(d.target) ? "auto" : "none") 
+
+        .attrTween("d", d => () => arc(d.current));
+
+    label.filter(function(d) {
+        return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+      }).transition(t)
+        .attr("fill-opacity", d => +labelVisible(d.target))
+        .attrTween("transform", d => () => labelTransform(d.current));
+    }
+
+      function arcVisible(d) {
+        return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+      }
+
+      function labelVisible(d) {
+        return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+      }
+
+      function labelTransform(d) {
+        const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+        const y = (d.y0 + d.y1) / 2 * radius;
+        return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
+      }
+    }
+
+    // Chiama la funzione createChart per avviare la visualizzazione
+    createChart(data);
+  </script>
+</body>
+</html>

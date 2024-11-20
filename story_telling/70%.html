@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<title>Storytelling with a Chord Diagram - Switching between Phone Brands</title>
+    <!--VERSIONE 7 DI D3 PER GRAFICO AD ALBERO -->
+    <script src="http://d3js.org/d3.v7.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-container">
+            <h1>RELAZIONI PROTEICHE</h1>
+            <h2>tra geni</h2>
+            <div id="chord" class="chord"></div>
+            <div class="legend" id="legend"></div>
+            <div class="buttons-container">
+                <button id="skip" class="sideButton">SKIP INTRO</button>
+                <button id="reset" class="sideButton begin_hidden">RESET</button>
+                <button id="playPause" class="sideButton begin_hidden">PAUSE</button><!--mostrare solo dopo let's start-->
+                <button id="clicker" class="sideButton">LET'S START</button>
+                <button id="advance" class="sideButton begin_hidden">ADVANCE</button><!--mostrare solo dopo let's start-->
+                <button id="back" class="sideButton begin_hidden">BACK</button><!--mostrare solo dopo let's start-->
+                <button id="dataset" class="sideButton">DATASET</button>
+            </div>
+        </div>
+
+        <div class="right-container">
+            <h1>Divisione geni secondo Gene Ontology</h1> <!-- Titolo -->
+            <div id="tree-chart" class="tree-chart"></div>
+            <h2>Informazione gene specifico selezionato</h2>
+            <div id="extra-info" class="extra-info"></div>
+        </div>
+    </div>
+    <script>
+        //DATA SET PER DIAGRAMMA A CORDE
+        const NameGene = ["Gene1","Gene2","Gene3","Gene4","Gene5","Gene6","Gene7"];
+			
+		const matrix = [
+		[9.6899,0.8859,0.0554,0.443,2.5471,2.4363,0.5537,2.5471], 
+		[0.1107,1.8272,0,0.4983,1.1074,1.052,0.2215,0.4983],
+		[0.0554,0.2769,0.2215,0.2215,0.3876,0.8306,0.0554,0.3322], 
+		[0.0554,0.1107,0.0554,1.2182,1.1628,0.6645,0.4983,1.052], 
+		[0.2215,0.443,0,0.2769,10.4097,1.2182,0.4983,2.8239], 
+		[1.1628,2.6024,0,1.3843,8.7486,8.8328,1.7165,5.5925], 
+		[0.0554,0.4983,0,0.3322,0.443,0.8859,1.7719,0.443]
+		];
+		
+
+        //DATASET PER ALBERO GERARCHICO 
+        const data = {
+        "name": "GeneOntology",
+        "children": [
+            {
+            "name": "FunzioniMolecolari",
+            "children": [
+                {
+                "name": "AttivitàEnzimatica",
+                "children": [
+                    { "name": "ALDH2", "value": 520 },
+                    { "name": "G6PD", "value": 480 },
+                    { "name": "MAOA", "value": 430 }
+                ]
+                },
+                {
+                "name": "LegameMolecolare",
+                "children": [
+                    { "name": "TP53", "value": 570 },
+                    { "name": "BRCA1", "value": 490 },
+                    { "name": "MYC", "value": 450 },
+                    { "name": "SP1", "value": 420 }
+                ]
+                },
+            ]
+            },
+            {
+            "name": "ComponentiCellulari",
+            "children": [
+                {
+                "name": "MembranaCellulare",
+                "children": [
+                    { "name": "EGFR", "value": 600 },
+                    { "name": "ITGB1", "value": 560 }
+                ]
+                },
+                {
+                "name": "Nucleo",
+                "children": [
+                    { "name": "RB1", "value": 580 },
+                    { "name": "E2F1", "value": 540 },
+                    { "name": "CDKN2A", "value": 520 },
+                    { "name": "RPL11", "value": 480 },
+                    { "name": "RPL5", "value": 460 }
+                ]
+                },
+                {
+                "name": "Mitocondrio",
+                "children": [
+                    { "name": "MT-ND1", "value": 620 },
+                    { "name": "MT-CO1", "value": 590 },
+                    { "name": "MT-CYB", "value": 550 }
+                ]
+                }
+            ]
+            },
+            {
+            "name": "ProcessiBiologici",
+            "children": [
+                {
+                "name": "Metabolismo",
+                "children": [
+                    {
+                    "name": "MetabolismoLipidico",
+                    "children": [
+                        { "name": "FASN", "value": 530 },
+                        { "name": "ACACA", "value": 490 }
+                    ]
+                    },
+                    {
+                    "name": "MetabolismoCarboidrati",
+                    "children": [
+                        { "name": "HK1", "value": 460 },
+                        { "name": "PFK1", "value": 430 },
+                        { "name": "PKM", "value": 400 }
+                    ]
+                    }
+                ]
+                },
+                {
+                "name": "CicloCellulare",
+                "children": [
+                    {
+                    "name": "Mitosi",
+                    "children": [
+                        { "name": "CCNB1", "value": 470 },
+                        { "name": "CDC20", "value": 440 }
+                    ]
+                    },
+                    {
+                    "name": "Meiosi",
+                    "children": [
+                        { "name": "SYCP3", "value": 420 },
+                        { "name": "DMC1", "value": 410 }
+                    ]
+                    }
+                ]
+                },
+
+            ]
+            }
+        ]
+        };
+        
+        d3.select("#tree-chart").selectAll("svg").remove();
+            
+        const widthdx = 400; // Usa tutta la larghezza disponibile
+        const root = d3.hierarchy(data);
+        const dx = 11; // Spaziatura verticale tra i nodi
+        const dy = 70; // Spaziatura orizzontale tra le profondità
+        const tree = d3.tree().nodeSize([dx, dy]); // Tree layout
+
+        tree(root);
+
+        // Calcola dimensioni per centrare l'albero
+        let x0 = Infinity;
+        let x1 = -x0;
+        root.each(d => {
+            if (d.x > x1) x1 = d.x;
+            if (d.x < x0) x0 = d.x;
+        });
+
+        const heightdx = x1 - x0 + dx * 2;
+
+        // Crea l'SVG e centra l'albero
+        const svgdx = d3.select("#tree-chart")
+            .append("svg")
+            .attr("width", widthdx + 300)
+            .attr("height", heightdx )
+            .attr("viewBox", [-dy / 3, x0 - dx, widthdx + 200, heightdx])
+            .attr("style", "font: 10px sans-serif;");
+
+        // Disegna i collegamenti
+        const link = svgdx.append("g")
+            .attr("fill", "none")
+            .attr("stroke", "#000")
+            .attr("stroke-opacity", 0.6)
+            .attr("stroke-width", 1.5)
+            .selectAll("path")
+            .data(root.links())
+            .join("path")
+            .attr("class", "link") // Classe per identificare i collegamenti
+            .attr("d", d3.linkHorizontal()
+                .x(d => d.y)
+                .y(d => d.x));
+
+        // Disegna i nodi
+        const node = svgdx.append("g")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-width", 3)
+            .selectAll("g")
+            .data(root.descendants())
+            .join("g")
+            .attr("class", "node") // Classe per identificare i nodi
+            .attr("transform", d => `translate(${d.y},${d.x})`)
+            .each(function(d) { d.node = this; })
+            .on("mouseover", highlightPath) // Aggiungi eventi mouseover
+            .on("mouseout", resetHighlight); // Aggiungi eventi mouseout
+
+        // Cerchi nei nodi
+        node.append("circle")
+            .attr("fill", "#000")
+            .attr("r", 4);
+
+        // Testo dei nodi
+        node.append("text")
+            .attr("dy", "0.31em")
+            .attr("x", d => d.children ? -8 : 8) // Testo a sinistra o destra
+            .attr("text-anchor", d => d.children ? "end" : "start")
+            .text(d => d.data.name)
+            .attr("fill", "#000"); // Testo nero
+
+        // Funzione per evidenziare il percorso
+        function highlightPath(event, d) {
+            let current = d;
+
+            // Evidenzia il percorso nell'albero
+            while (current) {
+                d3.select(current.node) // Nodo cerchio
+                    .select("circle")
+                    .attr("fill", "orange")
+                    .transition("transition", "zoom");
+
+                d3.select(current.node) // Nodo testo
+                    .select("text")
+                    .attr("fill", "orange")
+                    .style("font-size", "14px");
+
+                d3.selectAll(".link") // Collegamento verso il nodo genitore
+                    .filter(link => link.target === current)
+                    .attr("stroke", "orange");
+
+                current = current.parent; // Passa al genitore
+            }
+
+            // Evidenziazione del nome del nodo
+            d3.select("#selected-node").text(d.data.name).style("color", "orange");
+        }
+
+
+        // Funzione per resettare l'evidenziazione
+        function resetHighlight(event, d) {
+            // Resetta colori di nodi e collegamenti
+            d3.selectAll("circle").attr("fill", "#000");
+            d3.selectAll("text").attr("fill", "#000");
+            d3.selectAll(".link").attr("stroke", "#000");
+        }
+
+        //CREAZIONE GRAFICO A CORDE 
+        const colors = ["#C4C4C4", "#69B40F", "#EC1D25", "#C8125C", "#008FC8", "#10218B", "#134B24", "#737373"];
+        const fill = d3.scaleOrdinal().range(colors);
+        const margin = { top: 20, right: 15, bottom: 10, left: 15 };
+        const width = 400 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        const innerRadius = Math.min(width, height) * 0.39;
+        const outerRadius = innerRadius * 1.30;
+
+        // SVG e posizione
+        const svg = d3.select("#chord")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")");
+
+        // Generatore di corde
+        const chordGenerator = d3.chord()
+            .sortSubgroups(d3.descending)
+            .sortChords(d3.descending);
+
+        const chords = chordGenerator(matrix); // Matrice
+
+        console.log("Chord groups after matrix:", chords.groups);
+		console.log("Chord chords after matrix:", chords);
+
+        // Arco esterno
+        const arc = d3.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius);
+
+        const chordPath = d3.ribbon()
+            .radius(innerRadius);
+
+        const g = svg.selectAll("g.group")
+			.data(chords.groups)
+			.enter().append("svg:g")
+			.attr("class", function(d) {return "group " + NameGene[d.index];});
+			
+        g.append("svg:path")
+            .attr("class", "arc")
+            .style("stroke", function (d) { return fill(d.index); })
+            .style("fill", function (d) { return fill(d.index); })
+            .attr("d", arc)
+            .style("opacity", 0)
+            .on("mouseover", (event, d) => {
+                const geneName = NameGene[d.index];
+                const rootNode = d3.hierarchy(data);
+                const treeNode = findNodeByName(geneName, rootNode);
+                if (treeNode) highlightPath(null, treeNode);
+            })
+            .on("mouseout", resetHighlight)
+            .transition().duration(1000)
+            .style("opacity", 0.4);
+
+        
+            /* Initiate Names */
+		
+		g.append("svg:text")
+            .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
+            .attr("dy", ".35em")
+            .attr("class", "titles")
+            //.style("size-font", "12x")
+            .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+            .attr("transform", function(d) {
+                    return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
+                    + "translate(" + (innerRadius + 20) + ")"
+                    + (d.angle > Math.PI ? "rotate(180)" : "");
+            })
+            .attr('opacity', 0)
+            .text(function(d,i) { return NameGene[i]; });  
+        
+        /* Initiate inner chords */
+
+		const chords_inside = svg.selectAll("path.chord")
+            .data(chords) // Usa direttamente i dati dei chords
+            .enter().append("path")
+            .attr("class", "chord")
+            .style("stroke", function(d) { return d3.rgb(fill(d.source.index)).darker(); })
+            .style("fill", function(d) { return fill(d.source.index); })
+            .attr("d", chordPath) // Usa il generatore `d3.ribbon()` per generare la geometria del path
+            .attr('opacity', 0);
+
+        
+        const textCenter = svg.append("g")
+            .attr("class", "explanationWrapper");
+        
+        /*Starting text middle top*/
+		var middleTextTop = textCenter.append("text")
+			.attr("class", "explanation")
+			.attr("text-anchor", "middle")
+			.attr("x", 0 + "px")
+			.attr("y", -24*10/2 + "px")
+			.attr("dy", "1em")
+			.attr("opacity", 1)
+			.text("The graph that you are gonna see is about the proteic relationship between different genes")
+			.call(wrap, 350);
+        
+        /*Starting text middle bottom*/
+		var middleTextBottom = textCenter.append("text")
+			.attr("class", "explanation")
+			.attr("text-anchor", "middle")
+			.attr("x", 0 + "px")
+			.attr("y", 24*3/2 + "px")
+			.attr("dy", "1em")
+			.attr('opacity', 1)
+			.text("Il grafico è di tipo relazionale e all' esterno sono posizinati i geni e le linee interne sono le relazioni che uniscono un gene ad un altro")
+			.call(wrap, 350);
+
+        
+
+        /* Storyboarding Steps */
+
+        // Reset button
+        d3.select("#reset")
+            .on("click", reset);
+
+        function reset() {
+            location.reload();
+            d3.select("#clicker").style("display", "block");
+            d3.select("#playPause").style("display", "none");
+            d3.select("#advance").style("display", "none");
+            d3.select("#back").style("display", "none");
+        }
+
+        // Skip button
+        d3.select("#skip")
+            .on("click", finalChord);
+
+        let isPlaying = true;
+        let counter = 1;
+        let autoAdvance; // Variabile per gestire il setInterval
+
+		// Clicker button
+        d3.select("#clicker").on("click", () => {
+            d3.select("#clicker").style("display", "none");
+            d3.select("#playPause").style("display", "block");
+            d3.select("#advance").style("display", "block");
+            d3.select("#back").style("display", "block");
+
+            // Mostra gli archi per un breve periodo
+            d3.selectAll(".arc")
+                .transition().delay(9 * 500).duration(200)
+                .style("opacity", 0)
+                .on("end", function () {
+                    d3.select(this).remove();
+                    if (d3.selectAll(".arc").empty()) {
+                        changeTopText("", 3 / 2, 0, 1);
+                        changeBottomText("", 2 / 2, 0, 1);
+
+                        startAutoAdvance(); // Avvia la sequenza automatica
+                    }
+                });
+        });
+
+		// Funzione per avviare l'avanzamento automatico
+        function startAutoAdvance() {
+            autoAdvance = setInterval(() => {
+                if (counter === 2) {
+                    d3.select("#back").style("visibility", "visible"); // Mostra "BACK" dopo il primo avanzamento
+                }
+                if (counter <= 8) drawStep(counter - 1);
+                else if (counter >= 9 && counter <= 16) drawChords(counter - 8);
+                if (counter === 17) {
+                    finalChord();
+                    clearInterval(autoAdvance);
+                    d3.select("#back").style("visibility", "hidden"); // Nasconde "BACK" alla fine della sequenza
+                }
+                counter++;
+            }, 7000);
+        }
+
+
+		// Funzione per mettere in pausa e riprendere
+        d3.select("#playPause").on("click", () => {
+            if (isPlaying) {
+                clearInterval(autoAdvance);
+                d3.select("#playPause").text("PLAY");
+            } else {
+                startAutoAdvance();
+                d3.select("#playPause").text("PAUSE");
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // Advance button
+        d3.select("#advance").on("click", function () {
+            if (counter <8) {
+                drawStep(counter - 1);
+            } else if (counter >= 8 && counter <= 15) {
+                drawChords(counter - 7);
+            }
+            counter++; // Incrementa il contatore per andare al passaggio successivo
+        });
+
+        function drawStep(index) {
+            const geneName = NameGene[index];
+            
+            // Evidenzia chord
+            showChord(index);
+
+            // Trova il nodo corrispondente nell'albero
+            const rootNode = d3.hierarchy(data); // Radice dell'albero
+            const treeNode = findNodeByName(geneName, rootNode);
+
+            if (treeNode) {
+                highlightPath(null, treeNode); // Evidenzia percorso nell'albero
+            }
+            
+            // Aggiorna i testi sopra e sotto
+            changeTopText(`Spiegazione del gene ${geneName}`, 3 / 2, 0, 1);
+            changeBottomText("", 2 / 2, 0, 1);
+        }
+
+
+        function createArc(index) {
+            const providerName = NameGene[index];
+            g.filter(d => d.index === index)
+                .append("svg:path")
+                .style("stroke", d => fill(d.index))
+                .style("fill", d => fill(d.index))
+                .attr("d", arc)
+                .style("opacity", 0)
+                .transition().duration(300)
+                .style("opacity", 1)
+                .on("end", () => {
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", ".35em")
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(100)
+                        .attr("opacity", 1)
+                        .text(providerName);
+                });
+        }
+
+		function showChord(sourceIndex) {
+            d3.selectAll(".chord") // Seleziona tutti i path dei chords
+                .transition().duration(1500)
+                .attr("opacity", function(d) {
+                    return d.source.index === sourceIndex ? 1 : 0;
+                });
+        }
+
+        function showChord(sourceIndex) {
+            d3.selectAll(".chord")
+                .data(chords_inside)  // Associa i dati di `chords` alla selezione
+                .transition().duration(1500)
+                .attr("opacity", function(d) {
+                    if (d.source.index === sourceIndex) {
+                        return 1;
+                    }
+                    return 0;
+                });
+        }
+
+        function finalChord() {
+            counter=30; // blocca avanzamento autoplay 
+            // Rimuove i pulsanti
+            d3.select("#clicker").style("visibility", "hidden");
+            d3.select("#skip").style("visibility", "hidden");
+            d3.select("#reset").style("display", "block");
+            d3.select("#playPause").style("display", "none");
+            d3.select("#advance").style("display", "none");
+            d3.select("#back").style("display", "none");
+
+            // Rimuove i testi
+            changeTopText("", 0, 0, 1);
+            changeBottomText("", 0, 0, 1);
+
+            // Crea o mostra gli archi
+            if (counter <= 8) {
+                g.append("svg:path")
+                    .style("stroke", d => fill(d.index))
+                    .style("fill", d => fill(d.index))
+                    .attr("d", arc)
+                    .style("opacity", 0)
+                    .transition().duration(1000)
+                    .style("opacity", 1);
+            } else {
+                svg.selectAll("g.group").select("path")
+                    .transition().duration(1000)
+                    .style("opacity", 1);
+            }
+
+            // Rende visibili le interazioni mouseover e mouseout
+            d3.selectAll(".group")
+                .on("mouseover", fade(.02))
+                .on("mouseout", fade(.80));
+
+
+            // Mostra tutte le chords
+            svg.selectAll("path.chord")  // Assicurati che le "chords" siano selezionate correttamente
+                .transition().duration(1000)
+                .style("opacity", 0.6);
+
+
+            // Mostra i testi e le linee degli archi
+            /*d3.selectAll("g.group").selectAll("line")
+                .transition().duration(100)
+                .style("stroke", "#000");*/
+
+            svg.selectAll("g.group")
+                .transition().duration(100)
+                .selectAll(".titles").style("opacity", 1);
+        }
+
+
+        /*Returns an event handler for fading a given chord group*/
+		function fade(opacity) {
+		return function(d, i) {
+			svg.selectAll("path.chord")
+				.filter(function(d) { return d.source.index != i && d.target.index != i; })
+				.transition()
+				.style("stroke-opacity", opacity)
+				.style("fill-opacity", opacity);
+		};
+		};/*fade*/
+
+		function endall(transition, callback) {
+            let n = 0;
+            transition
+                .on("start", function () { ++n; }) // Incrementa il conteggio all'inizio di ogni transizione
+                .on("end", function () { if (!--n) callback.apply(this, arguments); }); // Decrementa alla fine e chiama il callback se tutte sono terminate
+        }
+ 
+        /* Gestione del wrapping del testo */
+        function wrap(text, width) {
+            text.each(function () {
+                const textElement = d3.select(this);
+                const words = textElement.text().split(/\s+/).reverse();
+                let word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.4,
+                    y = textElement.attr("y"),
+                    x = textElement.attr("x"),
+                    dy = parseFloat(textElement.attr("dy")) || 0,
+                    tspan = textElement.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", `${dy}em`);
+
+                while ((word = words.pop())) {
+                    line.push(word);
+                    tspan.text(line.join(" "));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(" "));
+                        line = [word];
+                        tspan = textElement.append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", `${++lineNumber * lineHeight + dy}em`)
+                            .text(word);
+                    }
+                }
+            });
+        }
+
+		/*Transition the top circle text*/
+		function changeTopText (newText, loc, delayDisappear, delayAppear, finalText, xloc, w) {
+
+			/*If finalText is not provided, it is not the last text of the Draw step*/
+			if(typeof(finalText)==='undefined') finalText = false;
+			
+			if(typeof(xloc)==='undefined') xloc = 0;
+			if(typeof(w)==='undefined') w = 350;
+			
+			middleTextTop	
+				/*Current text disappear*/
+				.transition().delay(700 * delayDisappear).duration(700)
+				.attr('opacity', 0)	
+				/*New text appear*/
+				.call(endall,  function() {
+					middleTextTop.text(newText)
+					.attr("y", -24*loc + "px")
+					.attr("x", xloc + "px")
+					.call(wrap, w);	
+				})
+				.transition().delay(700 * delayAppear).duration(700)
+				.attr('opacity', 1)
+				.call(endall,  function() {
+					if (finalText == true) {
+						d3.select("#clicker")
+							.text(buttonTexts[counter-2])
+							.style("pointer-events", "auto")
+							.transition().duration(400)
+							.style("border-color", "#363636")
+							.style("color", "#363636");
+						};
+				});
+		};/*changeTopText */
+
+		/*Transition the bottom circle text*/
+		function changeBottomText (newText, loc, delayDisappear, delayAppear) {
+			middleTextBottom
+				/*Current text disappear*/
+				.transition().delay(700 * delayDisappear).duration(700)
+				.attr('opacity', 0)
+				/*New text appear*/
+				.call(endall,  function() {
+					middleTextBottom.text(newText)
+					.attr("y", 24*loc + "px")
+					.call(wrap, 350);	
+				})
+				.transition().delay(700 * delayAppear).duration(700)
+				.attr('opacity', 1);
+		;}/*changeTopText*/
+
+		/*Stop clicker from working*/
+		function stopClicker() {
+			d3.select("#clicker")
+				.style("pointer-events", "none")
+				.transition().duration(400)
+				.style("border-color", "#D3D3D3")
+				.style("color", "#D3D3D3");
+		};/*stopClicker*/
+
+        function findNodeByName(name, node) {
+            if (node.data.name === name) return node; // Nodo trovato
+            if (node.children) {
+                for (const child of node.children) {
+                    const result = findNodeByName(name, child);
+                    if (result) return result; // Continua la ricerca nei figli
+                }
+            }
+            return null; // Nodo non trovato
+        }
+    </script>
+</body>
+
+
+

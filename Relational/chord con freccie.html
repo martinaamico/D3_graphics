@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Interazioni proteiche tra geni</title> <!-- Titolo della pagina -->
+    <style>
+        body {
+            cursor: pointer;
+        }
+        svg text {
+            font-size: 8px; /* Riduce la dimensione del testo per evitare sovrapposizioni */
+        }
+    </style>
+</head>
+<body>
+<h1 style="text-align: center;">Interazioni proteiche tra geni</h1> <!-- Titolo sopra il grafico -->
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script>
+// Dati CSV in formato testo
+const dataText = `source,target,value
+TP53,EGFR,5
+TP53,BRCA1,8
+BRCA1,ATM,7
+BRCA1,AKT1,6
+ATM,TP53,9
+ATM,EGFR,4
+EGFR,AKT1,10
+AKT1,PIK3CA,5
+PIK3CA,TP53,7
+PIK3CA,MDM2,3
+TP53,MDM2,8
+MDM2,CDKN1A,6
+CDKN1A,CCND1,2
+CCND1,CDK4,11
+CDK4,RB1,4
+RB1,E2F1,7
+E2F1,MYC,6
+MYC,CCNE1,8
+CCNE1,CDK2,9
+CDK2,TP53,3
+APC,CTNNB1,6
+CTNNB1,MYC,5
+MYC,JUN,8
+JUN,FOS,9
+FOS,EGFR,4
+EGFR,VEGFA,6
+VEGFA,KDR,5
+BAX,TP53,6`;
+
+// Parsing dei dati
+const data = d3.csvParse(dataText, d3.autoType);
+
+// Estrarre i nomi dei nodi e creare una matrice di adiacenza
+const names = Array.from(new Set(data.flatMap(d => [d.source, d.target])));
+const index = new Map(names.map((name, i) => [name, i]));
+const matrix = Array.from(index, () => new Array(names.length).fill(0));
+data.forEach(({source, target, value}) => matrix[index.get(source)][index.get(target)] += value);
+
+// Impostazioni del diagramma (dimensioni ridotte)
+const width = 640;
+const height = width;
+const innerRadius = Math.min(width, height) * 0.25 - 40; // Ridotto della metà
+const outerRadius = innerRadius + 6;
+const color = d3.scaleOrdinal(names, d3.schemeCategory10);
+const formatValue = x => `${x.toFixed(0)}B`;
+const chord = d3.chordDirected().padAngle(12 / innerRadius).sortSubgroups(d3.descending).sortChords(d3.descending);
+const ribbon = d3.ribbonArrow().radius(innerRadius - 0.5).padAngle(1 / innerRadius);
+const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
+
+// Creazione del diagramma
+const svg = d3.create("svg").attr("viewBox", [-width / 2, -height / 2, width, height]);
+const chords = chord(matrix);
+
+// Aggiungere i nastri
+const ribbons = svg.append("g")
+    .attr("fill-opacity", 0.75)
+  .selectAll("path")
+  .data(chords)
+  .join("path")
+    .attr("d", ribbon)
+    .attr("fill", d => color(names[d.target.index]))
+    .style("mix-blend-mode", "multiply")
+  .append("title")
+    .text(d => `${names[d.source.index]} interacts with ${names[d.target.index]} ${formatValue(d.source.value)}`);
+
+// Aggiungere i gruppi e interattività per evidenziare le connessioni
+const group = svg.append("g")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 8)  // Diminuire dimensione del font
+  .selectAll("g")
+  .data(chords.groups)
+  .join("g");
+
+// Aggiungere gli archi dei gruppi
+group.append("path")
+    .attr("d", arc)
+    .attr("fill", d => color(names[d.index]))
+    .attr("stroke", "#fff")
+    .on("mouseover", function(event, d) {
+      // Cambiare l'opacità dei nastri in base al gene selezionato
+      ribbons.transition().duration(200)
+        .attr("fill-opacity", ribbon => 
+          ribbon.source.index === d.index || ribbon.target.index === d.index ? 1 : 0.1
+        );
+    })
+    .on("mouseout", function() {
+      // Ripristinare l'opacità per tutte le connessioni
+      ribbons.transition().duration(200)
+        .attr("fill-opacity", 0.75);
+    })
+  .append("title")
+    .text(d => `${names[d.index]} interacts with others with a total value of ${formatValue(matrix[d.index].reduce((a, b) => a + b, 0))}`);
+
+// Aggiungere le etichette dei nomi sopra il diagramma per evitare sovrapposizioni
+group.append("text")
+    .attr("dy", "-0.5em")
+    .attr("transform", d => {
+      const angle = (d.startAngle + d.endAngle) / 2;
+      const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 30);
+      const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 30);
+      return `translate(${x},${y}) rotate(${(angle * 180 / Math.PI - 90)})`;
+    })
+    .attr("text-anchor", d => (d.startAngle + d.endAngle) / 2 > Math.PI ? "end" : "start")
+    .attr("fill", d => color(names[d.index]))
+    .text(d => names[d.index].toUpperCase()); // Nomi in maiuscolo
+
+// Aggiungere il diagramma al documento
+document.body.appendChild(svg.node());
+</script>
+</body>
+</html>
