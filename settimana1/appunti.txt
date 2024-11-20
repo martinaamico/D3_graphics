@@ -1,0 +1,110 @@
+SETTIMANA 1 : 
+
+DONE: 
+    1.Studio tecnologia D3
+    2.lettura tesi Jessica sullo stesso argomento 
+    3.libri sul grafici 
+    4.analisi sul significato dei diversi grafici e relazione ai data set
+    5.Test con Vizhub
+    6. Repository con progetto annesso 
+
+
+TODO:
+1.Vedere react per chat 
+
+1- studio della tecnologia Libreria D3 
+
+1.1- libro di riferimento: 
+    -D3.js in Action_ Data visualization with JavaScript
+
+1.2- Limitazioni confronto a strumenti simili: 
+
+    D3.js è molto popolare per la creazione di visualizzazioni dati personalizzate, ma ha anche alcune limitazioni rispetto ad altre librerie più recenti e ai suoi concorrenti principali, come Chart.js, Plotly e Three.js. Ecco le principali limitazioni di D3.js rispetto ad altre librerie di visualizzazione dati:
+
+    Curva di apprendimento ripida:
+
+    D3.js offre un’ampia gamma di funzionalità a basso livello, richiedendo conoscenze solide di JavaScript e dei concetti di SVG e manipolazione del DOM. Al contrario, librerie come Chart.js e Plotly sono più user-friendly e spesso più rapide da imparare, poiché forniscono componenti e layout predefiniti.
+    Componenti predefiniti limitati:
+
+    D3 non include grafici preimpostati come istogrammi, grafici a barre o grafici a torta, che vanno quindi costruiti manualmente. Librerie come Chart.js, invece, offrono molti grafici comuni già pronti e facilmente personalizzabili.
+    Mancanza di interattività avanzata:
+
+    D3 supporta interazioni di base, come hover e clic, ma non è progettato specificamente per interattività complessa o grafici reattivi come Plotly, che offre numerose funzionalità integrate come il drag-and-drop, il zoom, e le annotazioni.
+    Limitazioni nelle animazioni 3D:
+
+    D3.js è basato principalmente su SVG e Canvas, il che lo rende adatto a visualizzazioni 2D. Librerie come Three.js, che è specializzata in grafica 3D, sono migliori per visualizzazioni complesse in tre dimensioni.
+    Prestazioni su grandi dataset:
+
+    D3.js può avere problemi di performance con grandi dataset, soprattutto usando SVG, poiché SVG è basato su nodi DOM, che diventano complessi da gestire su larga scala. Soluzioni come WebGL (usato in Plotly e Three.js) o Canvas sono spesso più efficienti per dataset di grandi dimensioni.
+    Mancanza di supporto per dashboard e visualizzazioni complesse:
+
+    D3 non è una libreria "pronta all'uso" per creare dashboard con più grafici o pannelli interattivi. Librerie come Plotly o Tableau offrono funzionalità dedicate per integrare e gestire visualizzazioni complesse in una singola pagina.
+    Aggiornamenti e manutenzione:
+
+    D3.js è una libreria open-source e non ha una documentazione sempre aggiornata rispetto a soluzioni commerciali o librerie come Plotly o Chart.js, che dispongono di un supporto documentale molto attivo e community ampie per aggiornamenti frequenti.
+    Integrazione con framework moderni:
+
+    Anche se D3 può essere utilizzato con React, Angular o Vue, l'integrazione non è semplice e richiede una gestione attenta del DOM. Al contrario, librerie come Vega o Victory sono state progettate pensando alla compatibilità con framework come React e risultano più facili da integrare in applicazioni moderne.
+
+
+1.3- Punti di forza di D3.js: 
+
+    Massima flessibilità e controllo:
+
+    D3 è progettata come una libreria a basso livello, il che significa che consente il pieno controllo su ogni aspetto della visualizzazione, dal design alle interazioni. Questo permette agli sviluppatori di creare grafici e visualizzazioni completamente personalizzate senza essere limitati da componenti predefiniti.
+    Vasta gamma di tipi di visualizzazione:
+
+    D3 supporta numerosi tipi di grafici, dai classici come grafici a barre e a linee, a quelli più avanzati come dendrogrammi, diagrammi a corda, diagrammi a forza, mappe e molto altro. Questo la rende ideale per esplorazioni dati complesse e visualizzazioni non convenzionali.
+    Libreria modulare:
+
+    La libreria è divisa in moduli, il che consente di importare solo i componenti necessari per una determinata visualizzazione. Questo aiuta a mantenere leggero il codice, migliorando le performance complessive del progetto.
+    Interazioni avanzate:
+
+    D3 supporta animazioni fluide e interazioni avanzate, come hover, click, zoom e drag-and-drop, permettendo di creare visualizzazioni altamente dinamiche e coinvolgenti. Questo aspetto è cruciale per presentare dati in modo intuitivo e permette una maggiore esplorazione da parte degli utenti.
+    Compatibilità con SVG, HTML e Canvas:
+
+    D3 è compatibile con SVG, HTML e Canvas, il che la rende incredibilmente versatile. Con SVG, si può sfruttare la scalabilità per visualizzazioni vettoriali di alta qualità, mentre Canvas è utile per dataset più grandi e visualizzazioni complesse.
+    Aggiornamenti dinamici dei dati:
+
+    Una delle caratteristiche distintive di D3 è la possibilità di aggiornare dinamicamente i dati senza dover ridisegnare l’intero grafico. Questo è utile per visualizzazioni in tempo reale o in situazioni in cui i dati cambiano frequentemente, come nei dashboard interattivi.
+    Compatibilità con browser moderni:
+
+    D3 è costruita per funzionare bene con i moderni standard web e supporta la maggior parte dei browser, incluse le versioni moderne di Chrome, Firefox, Safari e Edge, senza necessitare di plugin aggiuntivi.
+    Forte supporto da parte della community:
+
+    Essendo open-source e molto utilizzata, D3 dispone di una vasta community online e una ricca documentazione, con molti esempi e tutorial. Questo rende più facile trovare risorse, risolvere problemi e migliorare le visualizzazioni.
+    Ecosistema e compatibilità con altre librerie:
+
+    Grazie alla struttura modulare, D3 può essere utilizzata in combinazione con librerie di framework come React e Vue, permettendo l'integrazione con applicazioni complesse. Esistono anche librerie come NVD3 e C3.js basate su D3, che offrono componenti predefiniti mantenendo la flessibilità di D3.
+    Supporto per visualizzazioni gerarchiche e su mappa:
+
+    D3 è ottima per visualizzazioni gerarchiche come alberi, cluster e partizioni, ed è anche ideale per creare visualizzazioni su mappa come mappe coropletiche o mappe geografiche dettagliate, utilizzando librerie esterne per la gestione dei dati geografici.
+
+
+3. Libri forniti sui grafici 
+
+    1.Visual Complexity-mapping Patterns of Information -Manuel Lima 
+    2.The book of trees - visualizing branches of knowledge - manuel Lima
+    3.L'arte funzionale-iconografuca e visualizzazione delle informazioni -alberto cairo 
+    4.Information Graphics-Harris 
+    5.The visual display of Quantitative Information -Tufte
+
+    studio trovato che era stato detto nel colloquio : Hierarchical Edge Bundles: visualization of Adjacency Relations in Hierarchical Data - Danny Holten 
+
+
+Interazione con colleghi : 
+-> I data set scelti sono stati consigliati da colleghe di ingneria bioinformatica infatti i grafici si basano su dati di geni 
+-> In data 30/10 è stato mostrato il primo grafico abbozzato gerarchico al responsabile dell'azienda
+
+
+Difficoltà : 
+-> scelta e comprensione delle fonti e scrematura dei libri da leggere tra quelli forniti 
+-> ricerca di data set e comprensione di come usarli, come preparare i dati per la visualizzazione
+-> utilizzo e studio della libreria D3 e studio di java script 
+->
+
+
+Inspo tesi : 
+
+-> drawing in data se non si sanno visuaizzare per comprendere 
+->usare tecnonoliga per capire il mondo-> quindi geni e proteine medicina 
