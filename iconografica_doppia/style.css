@@ -1,9 +1,9 @@
 body {
     font-family: Arial, sans-serif;
 }
-body, html {
-    overflow-x: hidden; /* Disabilita lo scorrimento orizzontale */
-}
+/*body, html {
+    overflow-x: hidden; /* Disabilita lo scorrimento orizzontale 
+}*/
 .main-container {
     display: flex;
     flex-direction: row;
@@ -23,9 +23,12 @@ body, html {
     margin-top: 10px;
     text-align: center;
 }
-.chord, .tree-chart, .extra-info {
+/*.chord{
+    width: ;
+}*/
+.tree-chart, .extra-info {
     width: 400px;
-    height: 400px;
+    height: 300px;
 }
 .legend {
     display: flex;

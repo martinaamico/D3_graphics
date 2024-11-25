@@ -25,7 +25,7 @@ function initializeTreeChart(data) {
         .append("svg")
         .attr("width", widthdx + 300)
         .attr("height", heightdx)
-        .attr("viewBox", [-dy / 3, x0 - dx, widthdx + 400, heightdx]) // Aumenta la larghezza visibile
+        .attr("viewBox", [-dy / 1.5, x0 - dx, widthdx+300, heightdx]) // Aumenta la larghezza visibile
         .attr("style", "font: 10px sans-serif;");
 
     // Disegna i collegamenti
@@ -103,6 +103,19 @@ function initializeTreeChart(data) {
             .style("font-size", "10px"); // Font di partenza
         d3.selectAll(".link").attr("stroke", "#000");
     }
+    // Funzione per gestire il dataset nella sezione extra-info
+    function showNodeInfo(nodeData) {
+        const infoContainer = document.getElementById("extra-info");
+        infoContainer.innerHTML = `
+            <h3>${nodeData.name}</h3>
+            ${nodeData.value ? `<p>Value: ${nodeData.value}</p>` : ""}
+        `;
+    }
+
+    // Associa l'evento click ai nodi dell'albero per mostrare i dettagli
+    d3.selectAll(".node").on("click", function(event, d) {
+        showNodeInfo(d.data);
+    });
 }
 
 //Caricamento file
