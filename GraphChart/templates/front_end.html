@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Bot con Grafici</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;  /* Finestra di chat grande quanto lo schermo */
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #d1e7ff;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f1f1f1;
+            margin-right: auto;
+            text-align: left;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+        }
+        .input-container input[type="file"] {
+            flex-grow: 1;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .input-container button:hover {
+            background-color: #0056b3;
+        }
+        .clear-button {
+            background-color: #ff4d4d;
+        }
+        .clear-button:hover {
+            background-color: #e60000;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1 style="text-align: center; padding: 10px;">Chat Bot con Grafici</h1>
+        <div class="chat-box" id="chatBox">
+            <!-- La chat sarà visualizzata qui -->
+        </div>
+
+        <div class="input-container">
+            <input type="file" id="fileInput" onchange="previewImage()">
+            <button onclick="uploadImage()">Carica</button>
+            <button class="clear-button" onclick="clearChat()">Pulisci Chat</button>
+        </div>
+    </div>
+
+    <script>
+        // Aggiungi un messaggio nella chat
+        function appendMessage(text, sender, imageSrc = null) {
+            const chatBox = document.getElementById('chatBox');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message');
+            messageElement.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+
+            if (imageSrc) {
+                // Aggiungi l'immagine come parte del messaggio
+                const imgElement = document.createElement('img');
+                imgElement.src = imageSrc;
+                imgElement.style.maxWidth = '100%';
+                imgElement.style.borderRadius = '5px';
+                messageElement.appendChild(imgElement);
+            }
+
+            if (text) {
+                messageElement.innerText = text;
+            }
+
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;  // Scorri fino in fondo
+        }
+
+        // Visualizza l'immagine caricata dall'utente
+        function previewImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                appendMessage(null, 'user', imageUrl);  // Aggiungi l'immagine come messaggio dell'utente
+            }
+        }
+
+        async function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            
+            if (!fileInput.files[0]) {
+                alert("Carica un file prima!");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            // Aggiungi un messaggio di caricamento nella chat
+            appendMessage("Caricamento in corso...", 'bot');
+                
+            try {
+                const response = await fetch('http://127.0.0.1:5000/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Mostra la risposta nella chat
+                if (data.prompt) {
+                    appendMessage(data.prompt, 'bot');
+                } else {
+                    appendMessage("Errore: " + data.error, 'bot');
+                }
+            } catch (error) {
+                appendMessage("Errore: impossibile contattare il server.", 'bot');
+            }
+        }
+
+        // Funzione per cancellare la conversazione
+        function clearChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';  // Rimuove tutti i messaggi dalla chat
+        }
+    </script>
+</body>
+</html>
