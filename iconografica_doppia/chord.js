@@ -1,7 +1,13 @@
-
 function initializeChordChart(NameGene,matrix) {
-    const colors = ["#C4C4C4", "#69B40F", "#EC1D25", "#C8125C", "#008FC8", "#10218B", "#134B24", "#737373"];
-    const fill = d3.scaleOrdinal().range(colors);
+    const pastelColors = [
+        "#F8B7D4", "#F1A7D1", "#E68FBC", "#D87FAD", "#D07E8D", "#D45F6C", "#E26262", "#F25F59", 
+        "#F56B48", "#FF8B33", "#FFBB00", "#D9E100", "#A1E801", "#4FBF56", "#24C29F", "#1A94B2", "#5182CC"
+    ];
+
+    // Crea una scala ordinal con i colori pastello definiti sopra
+    const fill = d3.scaleOrdinal()
+        .domain(d3.range(17))  // Associa 17 colori agli archi
+        .range(pastelColors);
     const margin = { top: 40, right: 15, bottom: 10, left: 15 };
     const width = 500 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
@@ -45,18 +51,31 @@ function initializeChordChart(NameGene,matrix) {
         .style("fill", function (d) { return fill(d.index); })
         .attr("d", arc)
         .style("opacity", 0)
-        /*.on("mouseover", (event, d) => {
-            const geneName = NameGene[d.index];
-            //const rootNode = d3.hierarchy(data);
-           // const treeNode = findNodeByName(geneName, rootNode);
-            //if (treeNode) highlightPath(null, treeNode);
-        })
-        //.on("mouseout", resetHighlight)*/
+        .on("click", showGeneInfo )
         .transition().duration(1000)
         .style("opacity", 0.4);
-
     
-        /* Initiate Names */
+    // Funzione showGeneInfo che riceve l'arco cliccato
+    function showGeneInfo(d) {
+        console.log("Dati dell'oggetto d:", d.srcElement.__data__.index);  // Debug per verificare cosa contiene `d`
+    
+        const geneIndex = d.srcElement.__data__.index;
+        if (geneIndex >= 0 && geneIndex < NameGene.length) {
+            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
+            // Passa il nome del gene alla funzione showNodeInfo
+            showNodeInfo({ data: { name: geneName } });
+    
+        } else {
+            console.error("Indice non valido:", geneIndex);
+            // Aggiungi un messaggio di errore
+            const infoContainer = document.getElementById("extra-info");
+            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
+        }
+    }
+    
+    
+    
+    /* Initiate Names */
     
     g.append("svg:text")
         .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
@@ -189,20 +208,28 @@ function initializeChordChart(NameGene,matrix) {
                 return 0;
             })
     };
-            
-
 
     // Funzione per mettere in pausa e riprendere
     d3.select("#playPause").on("click", () => {
-        if (isPlaying) {
-            clearInterval(autoAdvance);
-            d3.select("#playPause").text("PLAY");
-        } else {
-            startAutoAdvance();
-            d3.select("#playPause").text("PAUSE");
-        }
+        console.log("Bottone cliccato");
+        console.log("Stato isPlaying prima del toggle:", isPlaying);
+        const button = d3.select("#playPause");
         isPlaying = !isPlaying;
+    
+        if (isPlaying) {
+            console.log("Avvio auto-advance");
+            startAutoAdvance();
+            button.text("PAUSE");
+            button.classed("playing", false);
+        } else {
+            console.log("Pausa auto-advance");
+            clearInterval(autoAdvance);
+            button.text("PLAY");
+            button.classed("playing", true);
+        }
+        console.log("Stato isPlaying dopo il toggle:", isPlaying);
     });
+    
 
     // Advance button
     d3.select("#advance").on("click", function () {
@@ -221,26 +248,6 @@ function initializeChordChart(NameGene,matrix) {
             changeBottomText("", 0, 0, 1);
     } // Incrementa il contatore per andare al passaggio successivo
     });
-
-    /*function drawStep(index) {
-        const geneName = NameGene[index];
-        
-        // Evidenzia chord
-        showChord(index);
-
-        // Trova il nodo corrispondente nell'albero
-        const rootNode = d3.hierarchy(data); // Radice dell'albero
-        const treeNode = findNodeByName(geneName, rootNode);
-
-        if (treeNode) {
-            highlightPath(null, treeNode); // Evidenzia percorso nell'albero
-        }
-        
-        // Aggiorna i testi sopra e sotto
-        changeTopText(`Spiegazione del gene ${geneName}`, 3 / 2, 0, 1);
-        changeBottomText("", 2 / 2, 0, 1);
-    }*/
-
     function drawStep(index) {
         createArc(index);
         changeTopText(`spiegazione gene ${index}`, 3 / 2, 0, 1);
@@ -305,7 +312,7 @@ function initializeChordChart(NameGene,matrix) {
         }
 
         // Rende visibili le interazioni mouseover e mouseout
-        d3.selectAll(".group")
+        d3.selectAll("path")
             .on("mouseover", fade(.02))
             .on("mouseout", fade(.80));
 
@@ -328,15 +335,18 @@ function initializeChordChart(NameGene,matrix) {
 
 
     /*Returns an event handler for fading a given chord group*/
-    function fade(opacity) {
-    return function(i) {
+   function fade(opacity) {
+    return function(event, i) {
         svg.selectAll("path.chord")
-            .filter(function(d) { return d.source.index != i && d.target.index != i; })
+            .filter(function(d) {
+                return d.source.index !== i.index && d.target.index !== i.index;
+            })
             .transition()
             .style("stroke-opacity", opacity)
             .style("fill-opacity", opacity);
     };
-    };/*fade*/
+}
+
 
     function endall(transition, callback) {
         let n = 0;
