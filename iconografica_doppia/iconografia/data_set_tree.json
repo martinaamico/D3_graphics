@@ -1,0 +1,57 @@
+{
+    "name": "GeneOntology",
+    "children": [
+        {
+            "name": "FunzioniMolecolari",
+            "children": [
+                {
+                    "name": "AttivitàEnzimatica",
+                    "children": [
+                        { "name": "ALDH2", "value": 520 },
+                        { "name": "G6PD", "value": 480 },
+                        { "name": "MAOA", "value": 430 }
+                    ]
+                },
+                {
+                    "name": "LegameMolecolare",
+                    "children": [
+                        { "name": "TP53", "value": 570 },
+                        { "name": "BRCA1", "value": 490 },
+                        { "name": "MYC", "value": 450 },
+                        { "name": "SP1", "value": 420 }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "ComponentiCellulari",
+            "children": [
+                {
+                    "name": "MembranaCellulare",
+                    "children": [
+                        { "name": "EGFR", "value": 600 },
+                        { "name": "ITGB1", "value": 560 }
+                    ]
+                },
+                {
+                    "name": "Nucleo",
+                    "children": [
+                        { "name": "RB1", "value": 580 },
+                        { "name": "E2F1", "value": 540 },
+                        { "name": "CDKN2A", "value": 520 },
+                        { "name": "RPL11", "value": 480 },
+                        { "name": "RPL5", "value": 460 }
+                    ]
+                },
+                {
+                    "name": "Mitocondrio",
+                    "children": [
+                        { "name": "MT-ND1", "value": 620 },
+                        { "name": "MT-CO1", "value": 590 },
+                        { "name": "MT-CYB", "value": 550 }
+                    ]
+                }
+            ]
+        }
+    ]
+}
