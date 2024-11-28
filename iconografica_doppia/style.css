@@ -1,6 +1,10 @@
-
 body {
     font-family: Arial, sans-serif;
+    /*background: linear-gradient(rgba(163, 163, 163, 0.174), rgba(112, 110, 110, 0.152)), 
+                url('background.jpeg');
+    background-size: cover;
+    background-position: center;
+    margin: 0;*/
 }
 h1,h2{
     text-align: center;
