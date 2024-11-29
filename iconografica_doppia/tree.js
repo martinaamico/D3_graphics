@@ -190,9 +190,11 @@ function initializeTreeChart(data) {
     
             current = current.parent; // Passa al genitore
         }
+
     
         // Evidenziazione del nome del nodo
         d3.select("#selected-node").text(d.data.name).style("color", "orange");
+        evidentiatearc()
     }
     
     // Funzione per mostrare i dettagli del nodo cliccato
