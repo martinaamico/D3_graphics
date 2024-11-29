@@ -64,6 +64,7 @@ function initializeChordChart(NameGene,matrix) {
             const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
             // Passa il nome del gene alla funzione showNodeInfo
             showNodeInfo({ data: { name: geneName } });
+            highlightPathbyName(geneName)
     
         } else {
             console.error("Indice non valido:", geneIndex);
@@ -179,10 +180,10 @@ function initializeChordChart(NameGene,matrix) {
                 d3.select("#back").style("display", "block"); // Mostra "BACK" dopo il primo avanzamento
             }*/
 
-            if (counter <=7) drawStep(counter);
+            if (counter <=16) drawStep(counter);
             //mettere che prende la lunghezza del vettore di nomi e scorrre fino alla metà 
-            else if (counter >= 8 && counter <= 15) showChord(counter - 8);
-            if (counter === 16) {
+            else if (counter >= 16 && counter <= 32) showChord(counter - 16);
+            if (counter === 33) {
                 finalChord();
                 clearInterval(autoAdvance);
                 d3.select("#back").style("visibility", "hidden");
@@ -207,6 +208,10 @@ function initializeChordChart(NameGene,matrix) {
                 }
                 return 0;
             })
+        const geneName = NameGene[sourceIndex];  // Ottieni il nome del gene
+        // Passa il nome del gene alla funzione showNodeInfo
+        showNodeInfo({ data: { name: geneName } })
+        highlightPathbyName(geneName)
     };
 
     // Funzione per mettere in pausa e riprendere
@@ -236,22 +241,26 @@ function initializeChordChart(NameGene,matrix) {
         if (counter <=7) {
             drawStep(counter);
         } 
-        else if (counter == 16){
+        else if (counter == 33){
             finalChord();
         }
-        else if (counter >= 8 && counter <= 15) {
-            showChord(counter - 8);
+        else if (counter >= 16 && counter <= 32) {
+            showChord(counter - 16);
         }
         counter++;
-        if(counter==7){// Rimuove i testi
+        if(counter==16){// Rimuove i testi
             changeTopText("", 0, 0, 1);
             changeBottomText("", 0, 0, 1);
     } // Incrementa il contatore per andare al passaggio successivo
     });
     function drawStep(index) {
         createArc(index);
-        changeTopText(`spiegazione gene ${index}`, 3 / 2, 0, 1);
+        changeTopText(``, 3 / 2, 0, 1);
         changeBottomText("", 2 / 2, 0, 1);
+        const geneName = NameGene[index];  // Ottieni il nome del gene
+        // Passa il nome del gene alla funzione showNodeInfo
+        showNodeInfo({ data: { name: geneName } })
+        highlightPathbyName(geneName)
     }
     function createArc(index) {
         const providerName = NameGene[index];

@@ -1,6 +1,11 @@
-
 body {
     font-family: Arial, sans-serif;
+    /*background: linear-gradient(rgba(163, 163, 163, 0.174), rgba(112, 110, 110, 0.152)), 
+                url('background.jpeg');
+    background-size: cover;
+    background-position: center;
+    margin: 0;*/
+    background-image: url(sfondo_2.jpg);
 }
 h1,h2{
     text-align: center;
@@ -8,7 +13,7 @@ h1,h2{
 .main-container {
     display: flex;
     flex-direction: row;
-    /*justify-content: space-between;*/
+    justify-content: space-between;
     gap: 20px;
 }
 .left-container {
@@ -16,6 +21,9 @@ h1,h2{
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.extra-hidden{
+    visibility: hidden;
 }
 .left-container h1,
 .left-container h2 {
@@ -35,16 +43,16 @@ h1,h2{
     text-align: center;
 }
 .left-container{
-    background-color: aliceblue;
+    background-color:rgb(255, 255, 255);
     border-radius: 5%;
 }
-.tree-chart{
-    background-color:rgba(255, 242, 127, 0.126);
+#tree-div{
+    background-color:rgba(255, 255, 255, 0.932);
     border-radius: 5%;
 }
-.extra-info{
+/*#extra-div{
     background-color: rgba(162, 101, 219, 0.21);
-}
+}*/
 .legend {
     display: flex;
     justify-content: center;
@@ -70,7 +78,7 @@ h1,h2{
     flex-wrap: nowrap; /* Impedisce la disposizione verticale */
 }
 .sideButton {
-    background-color: rgb(128, 169, 209); /* Colore di sfondo rosa */
+    background-color: rgb(118, 122, 175); /* Colore di sfondo rosa */
     border: none;
     color: white; /* Testo bianco */
     padding: 10px 20px; /* Padding */
@@ -111,11 +119,11 @@ h1,h2{
     position: relative;
     padding: 15px;
     border: 1px solid #ddd;
-    background-color: #f9f9f9;
+    background-color: #fffffc;
     max-width: 500px;
     margin: 10px auto;
     font-family: Arial, sans-serif;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.418);
 }
 
 #extra-info .gene-info {
