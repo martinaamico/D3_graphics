@@ -46,6 +46,56 @@ function findGeneInfo(data, geneName) {
     }
     return null;
 }
+function highlightPathbyName(geneName) {
+    // Trova il nodo corrispondente al gene nell'albero
+    
+    const targetNode = d3.selectAll(".node")
+        .filter(function(d) {
+            return d.data.name === geneName;
+        })
+        .datum(); // Ottieni i dati del nodo selezionato
+    console.log(geneName)
+    
+    if (!targetNode) {
+        console.error(`Nodo non trovato per il gene: ${geneName}`);
+        return;
+    }
+
+    // Resetta l'evidenziazione esistente
+    resetHighlight();
+
+    // Evidenzia il percorso dal nodo al genitore
+    let current = targetNode;
+    while (current) {
+        d3.select(current.node) // Evidenzia il nodo
+            .select("circle")
+            .attr("fill", "orange");
+
+        d3.select(current.node) // Evidenzia il testo
+            .select("text")
+            .attr("fill", "orange")
+            .style("font-size", "14px");
+
+        d3.selectAll(".link") // Evidenzia il collegamento verso il genitore
+            .filter(link => link.target === current)
+            .attr("stroke", "orange");
+
+        current = current.parent; // Passa al nodo genitore
+    }
+
+    // Mostra il nome del gene evidenziato
+    d3.select("#selected-node").text(targetNode.data.name).style("color", "orange");
+}
+// Funzione per resettare l'evidenziazione
+function resetHighlight() {
+    // Resetta colori di nodi e collegamenti
+    d3.selectAll("circle").attr("fill", "#000");
+    d3.selectAll("text")
+        .attr("fill", "#000") // Colore testo nero
+        .style("font-size", "10px"); // Font di partenza
+    d3.selectAll(".link").attr("stroke", "#000");
+}
+
 
 function initializeTreeChart(data) {
     let selectedNode = null; // Nodo selezionato
@@ -103,6 +153,7 @@ function initializeTreeChart(data) {
         .attr("transform", d => `translate(${d.y},${d.x})`)
         .each(function(d) { d.node = this; });
 
+    console.log("dati da root",root)
         // Cerchi nei nodi
     node.append("circle")
         .attr("fill", "#000")
@@ -117,17 +168,6 @@ function initializeTreeChart(data) {
         .text(d => d.data.name)
         .attr("fill", "#000") // Testo nero
         .style("cursor", "pointer"); // Imposta il cursore "pointer" sui testi
-
-
-    // Funzione per resettare l'evidenziazione
-    function resetHighlight() {
-        // Resetta colori di nodi e collegamenti
-        d3.selectAll("circle").attr("fill", "#000");
-        d3.selectAll("text")
-            .attr("fill", "#000") // Colore testo nero
-            .style("font-size", "10px"); // Font di partenza
-        d3.selectAll(".link").attr("stroke", "#000");
-    }
 
     // Funzione per evidenziare il percorso
     function highlightPath(d) {
@@ -154,11 +194,11 @@ function initializeTreeChart(data) {
         // Evidenziazione del nome del nodo
         d3.select("#selected-node").text(d.data.name).style("color", "orange");
     }
-
+    
     // Funzione per mostrare i dettagli del nodo cliccato
     // tree.js
     
-    function findGeneInfo(data, geneName) {
+    /*function findGeneInfo(data, geneName) {
         for (const category in data.GeneOntology) {
             for (const subcategory in data.GeneOntology[category]) {
                 const genes = data.GeneOntology[category][subcategory];
@@ -169,7 +209,7 @@ function initializeTreeChart(data) {
             }
         }
         return null;
-    }
+    }*/
     
     // Associa l'evento click ai nodi dell'albero per mostrare i dettagli
     d3.selectAll(".node").on("click", function(event, d) {
@@ -178,6 +218,7 @@ function initializeTreeChart(data) {
 
         // Evidenzia il nodo cliccato
         highlightPath(d);
+        //console.log(d);
         selectedNode = d; // Salva il nodo selezionato
 
         // Mostra le informazioni del nodo cliccato
