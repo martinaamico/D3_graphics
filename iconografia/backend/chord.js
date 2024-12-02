@@ -32,6 +32,7 @@ function fade(opacity) {
     };
 }
 function initializeChordChart(NameGene,matrix) {
+    const dim=NameGene.length;
     const pastelColors = [
         "#F8B7D4", "#F1A7D1", "#E68FBC", "#D87FAD", "#D07E8D", "#D45F6C", "#E26262", "#F25F59", 
         "#F56B48", "#FF8B33", "#FFBB00", "#D9E100", "#A1E801", "#4FBF56", "#24C29F", "#1A94B2", "#5182CC"
@@ -39,7 +40,7 @@ function initializeChordChart(NameGene,matrix) {
 
     // Crea una scala ordinal con i colori pastello definiti sopra
     const fill = d3.scaleOrdinal()
-        .domain(d3.range(17))  // Associa 17 colori agli archi
+        .domain(d3.range(dim))  // Associa 17 colori agli archi
         .range(pastelColors);
     const margin = { top: 40, right: 15, bottom: 10, left: 15 };
     const width = 500 - margin.left - margin.right;
@@ -64,6 +65,9 @@ function initializeChordChart(NameGene,matrix) {
 
     console.log("Chord groups after matrix:", chords.groups);
     console.log("Chord chords after matrix:", chords);
+    console.log("lunghezza della matrice ",matrix.length);
+    //console.log("lunghezza della matrice ",matrix.lineNumber);
+    console.log("lunghezza del vettore nomi",NameGene.length);
 
     // Arco esterno
     const arc = d3.arc()
@@ -213,10 +217,10 @@ function initializeChordChart(NameGene,matrix) {
                 d3.select("#back").style("display", "block"); // Mostra "BACK" dopo il primo avanzamento
             }*/
 
-            if (counter <=16) drawStep(counter);
+            if (counter <=dim-1) drawStep(counter);
             //mettere che prende la lunghezza del vettore di nomi e scorrre fino alla metà 
-            else if (counter >= 16 && counter <= 32) showChord(counter - 16);
-            if (counter === 33) {
+            else if (counter >= dim-1 && counter <= dim*2-2) showChord(counter - (dim));
+            if (counter === dim*2-1) {
                 finalChord();
                 clearInterval(autoAdvance);
                 d3.select("#back").style("visibility", "hidden");
@@ -271,17 +275,18 @@ function initializeChordChart(NameGene,matrix) {
 
     // Advance button
     d3.select("#advance").on("click", function () {
-        if (counter <=7) {
+        if (counter <=dim-1) {
             drawStep(counter);
+            counter++;
         } 
-        else if (counter == 33){
+        else if (counter == dim*2-1){
             finalChord();
         }
-        else if (counter >= 16 && counter <= 32) {
-            showChord(counter - 16);
+        else if (counter >= dim-1 && counter <= (dim-1)*2) {
+            showChord(counter - dim-1);
+            counter++;
         }
-        counter++;
-        if(counter==16){// Rimuove i testi
+        if(counter==dim-1){// Rimuove i testi
             changeTopText("", 0, 0, 1);
             changeBottomText("", 0, 0, 1);
     } // Incrementa il contatore per andare al passaggio successivo
@@ -321,7 +326,7 @@ function initializeChordChart(NameGene,matrix) {
     }
 
     function finalChord() {
-        counter=30; // blocca avanzamento autoplay = dim +1 generalizzato 
+        counter=dim*2+dim; // blocca avanzamento autoplay = dim +1 generalizzato 
         // Rimuove i pulsanti
         d3.select("#clicker").style("visibility", "hidden");
         d3.select("#skip").style("visibility", "hidden");
@@ -477,8 +482,8 @@ function initializeChordChart(NameGene,matrix) {
     };/*stopClicker*/
 }
 Promise.all([
-    d3.json("names.json"),
-    d3.json("matrix.json")
+    d3.json("../file_json/names.1.json"),
+    d3.json("../file_json/matrix.1.json")
 ]).then(([namesData, matrixData]) => {
     NameGene = namesData.NameGene;
     const matrix = matrixData.matrix;

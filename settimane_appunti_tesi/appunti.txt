@@ -108,3 +108,33 @@ Inspo tesi :
 
 -> drawing in data se non si sanno visuaizzare per comprendere 
 ->usare tecnonoliga per capire il mondo-> quindi geni e proteine medicina 
+
+
+
+
+settimana 7 : 
+set painter crea front end disegnando e creando il codice c'è amche un aparte dedicata ai grafici 
+è stato evidenziato come le persone hanno una carenza nell'approciare grafici complessi nonostante data set favorevoli 
+lo scopo è comprendere come rappresentare al meglio questi tipi di data set complessi e semplificarne l'utilizzo 
+
+
+
+
+settimana 7: 
+ provare un altro data base come richiesto dall'azienda sulle figure dell'informatico all'interno dell'azienda 
+
+
+
+
+ inizialmente ho sperimentato con grafici singoli per capire quali data set fossero meglio rappresentati 
+ riunione con sede di lodi di grafica 
+ inizio con sviluppo di story telling singolo 
+ paso successivo studio iconografiche manuali e sviluppo di più grafici nella stessa area e cambio vincoli obbligatori e desiderabili ecc 
+
+
+ citare sito story telling
+
+ settimana 5 cambio versione di d3 da 3 prima poi 5 poi 7 per funzionalità di evidenziazione ed interazione con grafici 
+ retrocompatibile fino alla 5 credo e che versione is è adesso 
+
+ settimana 6 e 7 renderlo più astratto dalla demo della specifica data set e divisione in cartelle secondo normative 
