@@ -9,8 +9,19 @@
     <link href='http://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
 	<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
     <link href="../frontend/style.css" rel='stylesheet'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
 </head>
 <body>
+    <div class="header-container">
+        <div class="title-section">
+            <h1>GRAFICI RELAZIONALI E GERARCHICI TRA GENI</h1>
+        </div>
+        <div class="button-section">
+            <button id="download-dataset" class="topButton">Download Data Set</button>
+        </div>
+    </div>
     <div class="main-container">
         <div class="left-container">
             <h1>RELAZIONI PROTEICHE</h1>
@@ -45,6 +56,40 @@
     </script>
     <script src="chord.js"></script>
     <script src="tree.js"></script>
+    <script>
+        async function downloadFolder() {
+            const zip = new JSZip();
+            const folder = zip.folder("file_json");
+    
+            // Lista dei file nella directory da includere nello ZIP
+            const files = [
+                "data_set_tree.json",
+                "matrix.json",
+                "names.json"
+            ];
+    
+            // Aggiungi i file al folder ZIP
+            for (const file of files) {
+                const response = await fetch(`../file_json/${file}`);
+                if (response.ok) {
+                    const content = await response.text();
+                    folder.file(file, content);
+                } else {
+                    console.error(`Errore nel caricamento del file: ${file}`);
+                }
+            }
+    
+            // Genera lo ZIP e scaricalo
+            zip.generateAsync({ type: "blob" }).then(function (content) {
+                saveAs(content, "file_json.zip");
+            });
+        }
+    
+        document.getElementById("download-dataset").addEventListener("click", downloadFolder);
+    </script>
+    
+    
+    
 </body>
 
 
