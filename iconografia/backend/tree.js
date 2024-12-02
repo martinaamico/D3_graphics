@@ -3,7 +3,7 @@
 function showNodeInfo(nodeData) {
     const infoContainer = document.getElementById("extra-info");
 
-    fetch('dati_specifici.json')
+    fetch("../file_json/dati_specifici.json")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Errore nel caricamento del file JSON");
@@ -30,7 +30,7 @@ function showNodeInfo(nodeData) {
         })
         .catch(error => {
             console.error("Errore durante il caricamento delle informazioni del gene:", error);
-            infoContainer.innerHTML = `<p>Errore nel caricamento delle informazioni.</p>`;
+            //infoContainer.innerHTML = `<p>Errore nel caricamento delle informazioni.</p>`;
         });
 }
 
@@ -232,7 +232,7 @@ function initializeTreeChart(data) {
 }
 
 // Caricamento file
-d3.json("data_set_tree.json").then(data => {
+d3.json("../file_json/data_set_tree1.json").then(data => {
     initializeTreeChart(data);
 }).catch(error => {
     console.error("Errore nel caricamento del file JSON:", error);

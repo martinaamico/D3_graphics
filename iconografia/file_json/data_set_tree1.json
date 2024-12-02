@@ -36,19 +36,7 @@
                 {
                     "name": "Nucleo",
                     "children": [
-                        { "name": "RB1", "value": 580 },
-                        { "name": "E2F1", "value": 540 },
-                        { "name": "CDKN2A", "value": 520 },
-                        { "name": "RPL11", "value": 480 },
-                        { "name": "RPL5", "value": 460 }
-                    ]
-                },
-                {
-                    "name": "Mitocondrio",
-                    "children": [
-                        { "name": "MT-ND1", "value": 620 },
-                        { "name": "MT-CO1", "value": 590 },
-                        { "name": "MT-CYB", "value": 550 }
+                        { "name": "RB1", "value": 580 }
                     ]
                 }
             ]
