@@ -27,11 +27,11 @@ h1,h2{
 }*/
 .left-container h1,
 .left-container h2 {
-    color: rgba(35, 35, 112, 0.793);
+    color: rgba(42, 42, 90, 0.793);
 }
 .right-container h1,
 .right-container h2 {
-    color: rgba(96, 70, 13, 0.793);
+    color: rgba(187, 136, 27, 0.793);
 }
 
 
@@ -53,6 +53,14 @@ h1,h2{
 /*#extra-div{
     background-color: rgba(162, 101, 219, 0.21);
 }*/
+#extra-div{
+    border: 1px solid #ddd;
+    background-color: #fffffc;
+    max-width: 500px;
+    margin: 10px auto;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.418);
+}
 .legend {
     display: flex;
     justify-content: center;
@@ -92,7 +100,7 @@ h1,h2{
 }
 
 .sideButton:hover {
-    background-color: #ff69b4; /* Colore hover */
+    background-color: #a5a6db; /* Colore hover */
 }
 
 /* Icone */
@@ -118,12 +126,6 @@ h1,h2{
 #extra-info {
     position: relative;
     padding: 15px;
-    border: 1px solid #ddd;
-    background-color: #fffffc;
-    max-width: 500px;
-    margin: 10px auto;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.418);
 }
 
 #extra-info .gene-info {
@@ -137,5 +139,5 @@ h1,h2{
     top: 10px;
     right: 10px;
     font-size: 40px;
-    color: rgba(35, 112, 186, 0.8);
+    /*color: rgba(35, 112, 186, 0.8);*/
 }

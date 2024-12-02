@@ -1,8 +1,36 @@
-/*function evidenziate {
+function evidenziaArc(geneName){
+    console.log("cliccato")
+    for(let i=0; i<17; i++){
+        if(geneName==NameGene[i]){
+            console.log(geneName);
+            console.log(NameGene[i]);
+            fade(.02);
+        }
+        
+    }
+}
+function sfumaturaARC(GeneName){
+    if(Ge)
+    svg.selectAll("path.chord")
+            .filter(function(d) {
+                return d.source.index !== i.index && d.target.index !== i.index;
+            })
+            .transition()
+            .style("stroke-opacity", opacity)
+            .style("fill-opacity", opacity);
+};
 
-
-}*/
-
+function fade(opacity) {
+    return function(event, i) {
+        svg.selectAll("path.chord")
+            .filter(function(d) {
+                return d.source.index !== i.index && d.target.index !== i.index;
+            })
+            .transition()
+            .style("stroke-opacity", opacity)
+            .style("fill-opacity", opacity);
+    };
+}
 function initializeChordChart(NameGene,matrix) {
     const pastelColors = [
         "#F8B7D4", "#F1A7D1", "#E68FBC", "#D87FAD", "#D07E8D", "#D45F6C", "#E26262", "#F25F59", 
@@ -20,7 +48,7 @@ function initializeChordChart(NameGene,matrix) {
     const outerRadius = innerRadius * 1.10;
 
     // SVG e posizione
-    const svg = d3.select("#chord")
+    svg = d3.select("#chord")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -349,17 +377,6 @@ function initializeChordChart(NameGene,matrix) {
 
 
     /*Returns an event handler for fading a given chord group*/
-   function fade(opacity) {
-    return function(event, i) {
-        svg.selectAll("path.chord")
-            .filter(function(d) {
-                return d.source.index !== i.index && d.target.index !== i.index;
-            })
-            .transition()
-            .style("stroke-opacity", opacity)
-            .style("fill-opacity", opacity);
-    };
-}
 
 
     function endall(transition, callback) {
@@ -459,14 +476,14 @@ function initializeChordChart(NameGene,matrix) {
             .style("color", "#D3D3D3");
     };/*stopClicker*/
 }
-
 Promise.all([
     d3.json("names.json"),
     d3.json("matrix.json")
 ]).then(([namesData, matrixData]) => {
-    const NameGene = namesData.NameGene;
+    NameGene = namesData.NameGene;
     const matrix = matrixData.matrix;
     initializeChordChart(NameGene, matrix);
 }).catch(error => {
     console.error("Errore nel caricamento del file JSON:", error);
 });
+

@@ -171,6 +171,10 @@ function initializeTreeChart(data) {
 
     // Funzione per evidenziare il percorso
     function highlightPath(d) {
+        //console.log("Calling selectTreetochord with:", d.data.name); // Debug
+        //selectTreetochord(d.data.name);
+        console.log("nome d", d.data.name);
+        evidenziaArc(d.data.name);
         let current = d;
     
         // Evidenzia il percorso nell'albero
@@ -194,7 +198,6 @@ function initializeTreeChart(data) {
     
         // Evidenziazione del nome del nodo
         d3.select("#selected-node").text(d.data.name).style("color", "orange");
-        evidentiatearc()
     }
     
     // Funzione per mostrare i dettagli del nodo cliccato
