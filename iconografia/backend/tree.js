@@ -102,7 +102,7 @@ function initializeTreeChart(data) {
 
     d3.select("#tree-chart").selectAll("svg").remove();
 
-    const widthdx = 800; // Maggiore larghezza del grafico
+    const widthdx = document.getElementById("tree-div").offsetWidth;
     const root = d3.hierarchy(data);
     const dx = 11; // Spaziatura verticale tra i nodi
     const dy = 150; // Spaziatura orizzontale aumentata
@@ -121,12 +121,21 @@ function initializeTreeChart(data) {
     const heightdx = x1 - x0 + dx * 2;
 
     // Crea l'SVG e centra l'albero
-    const svgdx = d3.select("#tree-chart")
+    /*const svgdx = d3.select("#tree-chart")
         .append("svg")
-        .attr("width", widthdx + 300)
+        .attr("width", widthdx )
         .attr("height", heightdx)
         .attr("viewBox", [-dy / 1.5, x0 - dx, widthdx + 300, heightdx]) // Aumenta la larghezza visibile
-        .attr("style", "font: 10px sans-serif;");
+        .attr("style", "font: 10px sans-serif;");*/
+        
+        const svgdx = d3.select("#tree-chart")
+             .append("svg")
+             .attr("width", widthdx)  // Width is set to container width
+             .attr("height", heightdx) // You can also set a dynamic height if necessary
+             .attr("viewBox", [-dy / 1.5, x0 - dx, widthdx, heightdx]) // Ensure it fits within the container
+             .attr("style", "font: 10px sans-serif;")
+             //.attr("preserveAspectRatio", "xMidYMid meet"); // Ensures the aspect ratio is maintained
+        
 
     // Disegna i collegamenti
     const link = svgdx.append("g")
@@ -170,7 +179,7 @@ function initializeTreeChart(data) {
         .style("cursor", "pointer"); // Imposta il cursore "pointer" sui testi
 
     // Funzione per evidenziare il percorso
-    function highlightPath(d) {
+    /*function highlightPath(d) {
         //console.log("Calling selectTreetochord with:", d.data.name); // Debug
         //selectTreetochord(d.data.name);
         console.log("nome d", d.data.name);
@@ -217,7 +226,7 @@ function initializeTreeChart(data) {
     }*/
     
     // Associa l'evento click ai nodi dell'albero per mostrare i dettagli
-    d3.selectAll(".node").on("click", function(event, d) {
+   /* d3.selectAll(".node").on("click", function(event, d) {
         // Resetta l'evidenziazione
         resetHighlight();
 
@@ -228,7 +237,108 @@ function initializeTreeChart(data) {
 
         // Mostra le informazioni del nodo cliccato
         showNodeInfo(d);
+    });*/
+    function highlightPath(d) {
+        // Console log per il nome del nodo, utile per il debug
+        console.log("nome d", d.data.name);
+        evidenziaArc(d.data.name);
+        let current = d;
+    
+        // Evidenzia il percorso nell'albero (dal nodo cliccato fino alla radice)
+        while (current) {
+            d3.select(current.node) // Nodo cerchio
+                .select("circle")
+                .attr("fill", "orange");
+    
+            d3.select(current.node) // Nodo testo
+                .select("text")
+                .attr("fill", "orange")
+                .style("font-size", "14px");
+    
+            d3.selectAll(".link") // Collegamento verso il nodo genitore
+                .filter(link => link.target === current)
+                .attr("stroke", "orange");
+    
+            current = current.parent; // Passa al genitore
+        }
+    
+        // Evidenziazione del nome del nodo
+        d3.select("#selected-node").text(d.data.name).style("color", "orange");
+    }
+    
+    // Funzione per mostrare i dettagli del nodo cliccato
+    function showNodeInfo(nodeData) {
+        const infoContainer = document.getElementById("extra-info");
+    
+        fetch("../file_json/dati_specifici.json")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Errore nel caricamento del file JSON");
+                }
+                return response.json();
+            })
+            .then(data => {
+                const geneInfo = findGeneInfo(data, nodeData.data.name);
+    
+                if (geneInfo) {
+                    let infoHtml = `
+                        <div class="gene-info">
+                            <h3>${geneInfo.nome}</h3>
+                            <p><strong>Spiegazione della funzione:</strong> ${geneInfo.spiegazione_della_funzione}</p>
+                    `;
+    
+                    // Aggiungi altre informazioni se disponibili
+                    if (geneInfo.scoperta) {
+                        infoHtml += `<p><strong>Scoperta:</strong> ${geneInfo.scoperta}</p>`;
+                    }
+                    if (geneInfo.posizione_del_filamento) {
+                        infoHtml += `<p><strong>Posizione del filamento:</strong> ${geneInfo.posizione_del_filamento}</p>`;
+                    }
+                    if (geneInfo.importanza_clinica) {
+                        infoHtml += `<p><strong>Importanza clinica:</strong> ${geneInfo.importanza_clinica}</p>`;
+                    }
+    
+                    const biotechnologicalInfo = geneInfo.applicazioni_biotecnologiche || geneInfo.terapie_correlate;
+                    if (biotechnologicalInfo) {
+                        infoHtml += `<p><strong>Altri dettagli:</strong> ${biotechnologicalInfo}</p>`;
+                    }
+    
+                    infoHtml += `</div>`;
+    
+                    infoContainer.innerHTML = infoHtml;
+                } else {
+                    infoContainer.innerHTML = `<p>Informazioni non disponibili per il gene: ${nodeData.data.name}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error("Errore durante il caricamento delle informazioni del gene:", error);
+                infoContainer.innerHTML = `<p>Errore nel caricamento delle informazioni.</p>`;
+            });
+    }
+    
+    // Funzione per verificare se un nodo è una foglia
+    function isLeafNode(d) {
+        return !d.children || d.children.length === 0;
+    }
+    
+    // Associa l'evento click ai nodi dell'albero per mostrare i dettagli solo se è una foglia
+    d3.selectAll(".node").on("click", function(event, d) {
+        // Verifica se il nodo è una foglia
+        if (isLeafNode(d)) {
+            // Resetta l'evidenziazione
+            resetHighlight();
+    
+            // Evidenzia il nodo cliccato
+            highlightPath(d);
+            selectedNode = d; // Salva il nodo selezionato
+    
+            // Mostra le informazioni del nodo cliccato
+            showNodeInfo(d);
+        } else {
+            console.log("Nodo non foglia cliccato. Nessuna azione.");
+        }
     });
+    
 }
 
 // Caricamento file

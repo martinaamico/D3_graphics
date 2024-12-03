@@ -172,3 +172,9 @@ h1,h2{
 .header-button:hover {
     background-color: #a5a6db;
 }
+#tree-div {
+    width: 100%;
+    height: 50%; /* or set a fixed height */
+    overflow: hidden; /* Prevent the SVG from overflowing */
+    position: relative; /* Needed to properly contain the SVG */
+}

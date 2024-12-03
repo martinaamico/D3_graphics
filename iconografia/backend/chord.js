@@ -456,7 +456,6 @@ function initializeChordChart(NameGene,matrix) {
 
         });
 
-
         // Mostra tutte le chords
         // Assicurati che le "chords" siano selezionate correttamente
         chords_inside.transition().duration(1000)
