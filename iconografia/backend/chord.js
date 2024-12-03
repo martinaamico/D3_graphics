@@ -175,6 +175,22 @@ function initializeChordChart(NameGene,matrix) {
         .style("opacity", 0.4);
     
     // Funzione showGeneInfo che riceve l'arco cliccato
+    function showGeneInfoIndex(geneIndex) {
+        //console.log("Dati dell'oggetto d:", d.index);  // Debug per verificare cosa contiene `d`
+        
+        //const geneIndex = d.index;
+        if (geneIndex >= 0 && geneIndex < NameGene.length) {
+            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
+            // Passa il nome del gene alla funzione showNodeInfo
+            showNodeInfo({ data: { name: geneName } });
+            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
+        } else {
+            console.error("Indice non valido:", geneIndex);
+            // Aggiungi un messaggio di errore
+            const infoContainer = document.getElementById("extra-info");
+            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
+        }
+    }
     function showGeneInfo(d) {
         console.log("Dati dell'oggetto d:", d.index);  // Debug per verificare cosa contiene `d`
         
@@ -253,6 +269,7 @@ function initializeChordChart(NameGene,matrix) {
         .on("click", reset);
 
     function reset() {
+        stopInfiniteCycle();
         location.reload();
         d3.select("#clicker").style("display", "block");
     }
@@ -302,9 +319,9 @@ function initializeChordChart(NameGene,matrix) {
             if (counter === dim*2-1) {
                 finalChord();
                 clearInterval(autoAdvance);
-                d3.select("#back").style("visibility", "hidden");
-                d3.select("#playPause").style("visibility", "hidden"); 
-                d3.select("#advance").style("visibility", "hidden");  // Nasconde "BACK" alla fine della sequenza
+                //d3.select("#back").style("visibility", "hidden");
+                //d3.select("#playPause").style("visibility", "hidden"); 
+                //d3.select("#advance").style("visibility", "hidden");  // Nasconde "BACK" alla fine della sequenza
             }
             // se clicco advance va avanti due volte?? 
             counter++;
@@ -334,24 +351,20 @@ function initializeChordChart(NameGene,matrix) {
 
     // Funzione per mettere in pausa e riprendere
     d3.select("#playPause").on("click", () => {
-        console.log("Bottone cliccato");
-        console.log("Stato isPlaying prima del toggle:", isPlaying);
-        const button = d3.select("#playPause");
+        if (isCycling) return; // Non fare nulla se è attivo il ciclo infinito
+    
         isPlaying = !isPlaying;
+        const button = d3.select("#playPause");
     
         if (isPlaying) {
-            console.log("Avvio auto-advance");
-            startAutoAdvance();
+            startAutoAdvance(); // Riprendi l'avanzamento automatico
             button.text("PAUSE");
-            button.classed("playing", false);
         } else {
-            console.log("Pausa auto-advance");
-            clearInterval(autoAdvance);
+            clearInterval(autoAdvance); // Ferma l'avanzamento automatico
             button.text("PLAY");
-            button.classed("playing", true);
         }
-        console.log("Stato isPlaying dopo il toggle:", isPlaying);
     });
+    
     
 
     // Advance button
@@ -408,12 +421,12 @@ function initializeChordChart(NameGene,matrix) {
 
     function finalChord() {
         // Rimuove i pulsanti
-        d3.select("#clicker").style("visibility", "hidden");
+        //d3.select("#clicker").style("visibility", "hidden");
         d3.select("#skip").style("visibility", "hidden");
         d3.select("#reset").style("display", "block");
-        d3.select("#playPause").style("display", "none");
-        d3.select("#advance").style("display", "none");
-        d3.select("#back").style("display", "none");
+        d3.select("#playPause").style("display", "block");
+        d3.select("#advance").style("display", "block");
+        d3.select("#back").style("display", "block");
 
         // Rimuove i testi
         changeTopText("", 0, 0, 1);
@@ -473,6 +486,7 @@ function initializeChordChart(NameGene,matrix) {
             .selectAll(".titles").style("opacity", 1);
         }
         counter=dim*2+dim; // blocca avanzamento autoplay = dim +1 generalizzato 
+        startInfiniteCycle();
     }
 
 
@@ -575,6 +589,153 @@ function initializeChordChart(NameGene,matrix) {
             .style("border-color", "#D3D3D3")
             .style("color", "#D3D3D3");
     };/*stopClicker*/
+    /*let autoCycle; // Variabile per il ciclo infinito
+    let isCycling = false; // Flag per controllare il ciclo infinito
+
+    // Funzione per avviare il ciclo infinito
+    function startInfiniteCycle() {
+        isCycling = true;
+        d3.select("#stop").style("display", "block"); // Mostra il bottone STOP
+        d3.select("#playPause").style("display", "none"); // Nascondi il pulsante play/pause
+
+        let geneIndex = 0; // Inizializza al primo gene
+
+        autoCycle = setInterval(() => {
+            // Evidenzia il gene corrente e i suoi chord
+            const geneName = NameGene[geneIndex];
+            evidenziaArc(geneName); // Funzione per evidenziare
+
+            // Incrementa o ricomincia il ciclo
+            geneIndex = (geneIndex + 1) % NameGene.length; // Ricomincia da zero quando arriva alla fine
+            showGeneInfoIndex(geneIndex);
+            
+        }, 4000); // Cambia gene ogni 4 secondi
+    }
+
+    // Funzione per fermare il ciclo infinito
+    function stopInfiniteCycle() {
+        isCycling = false;
+        clearInterval(autoCycle); // Ferma il ciclo
+        d3.select("#stop").style("display", "none"); // Nascondi il bottone STOP
+        d3.select("#playPause").style("display", "block"); // Mostra di nuovo il pulsante play/pause
+    }
+
+    // Event Listener per il bottone STOP
+    d3.select("#stop").on("click", stopInfiniteCycle);
+
+    // Modifica il bottone "Clicker" per avviare il ciclo infinito
+    d3.select("#clicker").on("click", () => {
+        d3.select("#clicker").style("display", "none"); // Nascondi il pulsante
+        startInfiniteCycle(); // Avvia il ciclo infinito
+    });*/
+
+    let currentNode = null; // Nodo corrente per il ciclo infinito
+let cycleInterval = null; // Variabile per l'intervallo del ciclo infinito
+
+// Funzione per avviare il ciclo infinito
+function startInfiniteCycle(initialNode) {
+    if (cycleInterval) {
+        clearInterval(cycleInterval); // Ferma il ciclo precedente
+    }
+
+    currentNode = initialNode || currentNode; // Imposta il nodo iniziale
+    if (!currentNode) {
+        console.error("Nessun nodo selezionato per avviare il ciclo infinito.");
+        return;
+    }
+
+    cycleInterval = setInterval(() => {
+        if (!currentNode) {
+            clearInterval(cycleInterval);
+            console.error("Ciclo interrotto: nodo corrente non valido.");
+            return;
+        }
+
+        // Resetta l'evidenziazione prima di procedere
+        resetHighlight();
+
+        // Evidenzia il nodo corrente
+        d3.select(currentNode.node)
+            .select("circle")
+            .attr("fill", "red");
+
+        d3.select(currentNode.node)
+            .select("text")
+            .attr("fill", "red")
+            .style("font-size", "14px");
+
+        d3.selectAll(".link")
+            .filter(link => link.target === currentNode)
+            .attr("stroke", "red");
+
+        // Passa al nodo successivo (o torna alla radice se alla fine)
+        currentNode = getNextNode(currentNode);
+
+    }, 1000); // Intervallo di 1 secondo
+}
+
+// Funzione per ottenere il prossimo nodo
+function getNextNode(node) {
+    if (node.children && node.children.length > 0) {
+        return node.children[0]; // Passa al primo figlio
+    } else if (node.parent) {
+        return node.parent; // Torna al genitore se è una foglia
+    } else {
+        return null; // Fine ciclo
+    }
+}
+
+// Funzione per interrompere il ciclo
+function stopInfiniteCycle() {
+    if (cycleInterval) {
+        clearInterval(cycleInterval);
+        cycleInterval = null;
+    }
+}
+
+// Funzione aggiornata evidenziaArc per modificare il nodo corrente
+function evidenziaArc(geneName) {
+    const targetNode = d3.selectAll(".node")
+        .filter(function (d) {
+            return d.data.name === geneName;
+        })
+        .datum();
+
+    if (!targetNode) {
+        console.error(`Nodo non trovato per il gene: ${geneName}`);
+        return;
+    }
+
+    // Resetta l'evidenziazione esistente
+    resetHighlight();
+
+    // Evidenzia il percorso dal nodo al genitore
+    let current = targetNode;
+    while (current) {
+        d3.select(current.node) // Evidenzia il nodo
+            .select("circle")
+            .attr("fill", "orange");
+
+        d3.select(current.node) // Evidenzia il testo
+            .select("text")
+            .attr("fill", "orange")
+            .style("font-size", "14px");
+
+        d3.selectAll(".link") // Evidenzia il collegamento verso il genitore
+            .filter(link => link.target === current)
+            .attr("stroke", "orange");
+
+        current = current.parent; // Passa al nodo genitore
+    }
+
+    // Imposta il nodo selezionato come nodo corrente per il ciclo infinito
+    currentNode = targetNode;
+
+    // Riavvia il ciclo infinito dal nuovo nodo
+    startInfiniteCycle(currentNode);
+}
+
+
 }
 Promise.all([
     d3.json("../file_json/names.1.json"),

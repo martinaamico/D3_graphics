@@ -6,14 +6,17 @@ body {
     background-position: center;
     margin: 0;*/
     /*background-image: url(sfondo.jpeg);*/
+    margin: 0;
 }
 h1,h2{
     text-align: center;
+    padding: 0;
+    margin-bottom: 0;
 }
 .main-container {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    /*justify-content: space-between;*/
     gap: 20px;
 }
 .left-container {
@@ -38,10 +41,10 @@ h1,h2{
 .right-container {
     width: 45%;
 }
-.buttons-container {
-    margin-top: 10px;
+/*.buttons-container {
+   /*margin-top: 10px;
     text-align: center;
-}
+}*/
 .left-container{
     background-color:rgb(255, 255, 255);
     /*border-radius: 5%;*/
@@ -61,7 +64,7 @@ h1,h2{
     font-family: Arial, sans-serif;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.418);
 }
-.legend {
+/*.legend {
     display: flex;
     justify-content: center;
     margin-top: 10px;
@@ -75,28 +78,58 @@ h1,h2{
     width: 20px;
     height: 20px;
     margin-right: 5px;
-}
+}*/
 .titles{
     font-size: 10px;
 }
-.buttons-container {
+/*.buttons-container {
     display: flex;
-    justify-content: center; /* Centra i bottoni */
-    gap: 10px; /* Spaziatura tra i bottoni */
-    flex-wrap: nowrap; /* Impedisce la disposizione verticale */
+    justify-content: center; /* Centra i bottoni 
+    gap: 10px; /* Spaziatura tra i bottoni 
+    flex-wrap: nowrap; /* Impedisce la disposizione verticale 
 }
 .sideButton {
-    background-color: rgb(118, 122, 175); /* Colore di sfondo rosa */
+    background-color: rgb(118, 122, 175); /* Colore di sfondo rosa 
+    border: none;
+    color: white; /* Testo bianco 
+    padding: 10px 20px; /* Padding 
+    font-size: 16px; /* Dimensione del font 
+    border-radius: 5px; /* Arrotondamento angoli 
+    cursor: pointer;
+    display: flex; /* Per centrare icona e testo 
+    align-items: center; /* Centra icona e testo verticalmente 
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 5px; /* Spaziatura tra icona e testo 
+}
+
+.sideButton:hover {
+    background-color: #a5a6db; /* Colore hover 
+}*/
+.buttons-container {
+    display: flex;
+    justify-content: center; /* Centra i bottoni orizzontalmente */
+    flex-wrap: wrap; /* Permette ai bottoni di andare a capo se necessario */
+    gap: 10px; /* Spaziatura tra i bottoni */
+}
+
+.sideButton {
+    background-color: rgb(118, 122, 175); /* Colore di sfondo */
     border: none;
     color: white; /* Testo bianco */
-    padding: 10px 20px; /* Padding */
+    padding: 10px 20px; /* Spaziatura interna */
     font-size: 16px; /* Dimensione del font */
-    border-radius: 5px; /* Arrotondamento angoli */
+    border-radius: 5px; /* Arrotondamento degli angoli */
     cursor: pointer;
-    display: flex; /* Per centrare icona e testo */
+    display: inline-flex; /* Per centrare icona e testo */
     align-items: center; /* Centra icona e testo verticalmente */
     justify-content: center;
-    gap: 5px; /* Spaziatura tra icona e testo */
+    visibility: visible; /* Assicura che i bottoni siano visibili di default */
+    transition: all 0.3s ease; /* Transizione fluida per modifiche */
+}
+
+.sideButton.hidden {
+    display: none; /* Nasconde completamente il bottone */
 }
 
 .sideButton:hover {
@@ -148,13 +181,13 @@ h1,h2{
     background-color: rgba(42, 42, 90, 0.8);
     color: white;
     padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    /*border-radius: 5px;*/
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /*margin-bottom: 20px;*/
 }
 
 .header-title {
-    font-size: 20px;
+    font-size: 10px;
     font-weight: bold;
     font-family: 'Oswald', sans-serif;
 }
@@ -174,7 +207,7 @@ h1,h2{
 }
 #tree-div {
     width: 100%;
-    height: 50%; /* or set a fixed height */
+    height: 40%; /* or set a fixed height */
     overflow: hidden; /* Prevent the SVG from overflowing */
     position: relative; /* Needed to properly contain the SVG */
 }
