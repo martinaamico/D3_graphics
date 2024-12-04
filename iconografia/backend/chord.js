@@ -1,48 +1,29 @@
 function evidenziaArc(geneName) {
-    console.log("Funzione evidenziaArc chiamata con:", geneName);
+    if(final==true){
+        const geneIndex = NameGene.indexOf(geneName);
+        if (geneIndex === -1) {
+            console.error(`Gene ${geneName} non trovato in NameGene.`);
+            return;
+        }
+        sfumaturaARC(geneIndex);
+        console.log("cambia index cliccato", geneIndex);
 
-    // Controlla che NameGene sia valido
-    if (!NameGene || NameGene.length === 0) {
-        console.error("NameGene non è stato inizializzato o è vuoto.");
-        return;
+        selectedArcIndexClicked=geneIndex
+        console.log("selectIndex: ", selectedArcIndexClicked)
     }
-
-    // Controlla che SVG sia definito
-    if (!svg) {
-        console.error("Il riferimento a svg non è definito.");
-        return;
-    }
-
-    // Trova l'indice del gene
-    const geneIndex = NameGene.indexOf(geneName);
-    if (geneIndex === -1) {
-        console.error(`Gene ${geneName} non trovato in NameGene.`);
-        return;
-    }
-
-    console.log(`Gene ${geneName} trovato all'indice ${geneIndex}`);
-
-    // Evidenzia l'arco
-    sfumaturaARC(geneIndex);
 }
 
-let selectedArcIndex = null; // Per memorizzare l'indice dell'arco attualmente selezionato
-
-// Funzione per la sfumatura di un arco
+let selectedArcIndex = null; 
+let selectedArcIndexClicked = null;
 function sfumaturaARC(geneIndex) {
-    if (!svg) {
-        console.error("Il riferimento a svg non è definito.");
-        return;
-    }
-
-    if (selectedArcIndex === geneIndex) {
-        console.log(`Deseleziono arco con indice ${geneIndex}`);
+    if(final==true){
+        if (selectedArcIndex === geneIndex) {
         selectedArcIndex = null;
         svg.selectAll("path.chord")
             .transition()
             .style("stroke-opacity", 0.8)
             .style("fill-opacity", 0.8);
-    } else {
+        } else {
         console.log(`Seleziono arco con indice ${geneIndex}`);
         selectedArcIndex = geneIndex;
         svg.selectAll("path.chord")
@@ -53,10 +34,9 @@ function sfumaturaARC(geneIndex) {
             .style("fill-opacity", function (d) {
                 return d.source.index === geneIndex || d.target.index === geneIndex ? 0.8 : 0.02;
             });
+        }
     }
 }
-
-
 // Gestori per mouseover e mouseout
 function fade(opacity) {
     return function (event, d) {
@@ -71,55 +51,20 @@ function fade(opacity) {
         }
     };
 }
-/*let selectedArcIndex = null; // Per memorizzare l'indice dell'arco attualmente selezionato
 
-function sfumaturaARC(geneIndex) {
-    if (selectedArcIndex === geneIndex) {
-        // Se l'arco cliccato è già selezionato, deselezionalo
-        selectedArcIndex = null;
-        svg.selectAll("path.chord")
-            .transition()
-            .style("stroke-opacity", 0.8)
-            .style("fill-opacity", 0.8); // Ripristina opacità
-    } else {
-        // Altrimenti, seleziona il nuovo arco
-        selectedArcIndex = geneIndex;
-        svg.selectAll("path.chord")
-            .transition()
-            .style("stroke-opacity", function (d) {
-                return d.source.index === geneIndex || d.target.index === geneIndex ? 0.8 : 0.02;
-            })
-            .style("fill-opacity", function (d) {
-                return d.source.index === geneIndex || d.target.index === geneIndex ? 0.8 : 0.02;
-            });
-    }
-}
-
-function fade(opacity) {
-    return function(event, i) {
-        svg.selectAll("path.chord")
-            .filter(function(d) {
-                return d.source.index !== i.index && d.target.index !== i.index;
-            })
-            .transition()
-            .style("stroke-opacity", opacity)
-            .style("fill-opacity", opacity);
-    };
-}*/
 function initializeChordChart(NameGene,matrix) {
     const dim=NameGene.length;
-    const pastelColors = [
-        "#F8B7D4", "#F1A7D1", "#E68FBC", "#D87FAD", "#D07E8D", "#D45F6C", "#E26262", "#F25F59", 
-        "#F56B48", "#FF8B33", "#FFBB00", "#D9E100", "#A1E801", "#4FBF56", "#24C29F", "#1A94B2", "#5182CC"
-    ];
+    // Crea una scala sequenziale che vada dal rosso al viola (arcobaleno)
+    const rainbowScale = d3.scaleSequential(d3.interpolateRainbow)
+    .domain([0, dim - 1]); // Mappa i valori da 0 a dim-1
 
-    // Crea una scala ordinal con i colori pastello definiti sopra
+    // Crea una scala ordinal con la sequenza di colori dall'arcobaleno
     const fill = d3.scaleOrdinal()
-        .domain(d3.range(dim))  // Associa 17 colori agli archi
-        .range(pastelColors);
+    .domain(d3.range(dim))  // Associa un colore a ciascun arco
+    .range(d3.range(dim).map(i => rainbowScale(i)));
     const margin = { top: 40, right: 15, bottom: 10, left: 15 };
-    const width = 500 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
+    const width = 450 - margin.left - margin.right;
+    const height = 450 - margin.top - margin.bottom;
     const innerRadius = Math.min(width, height) * 0.39;
     const outerRadius = innerRadius * 1.10;
 
@@ -157,57 +102,14 @@ function initializeChordChart(NameGene,matrix) {
         .enter().append("svg:g")
         .attr("class", function(d) {return "group " + NameGene[d.index];});
         
-        g.append("svg:path")
+    g.append("svg:path")
         .attr("class", "arc")
         .style("stroke", function(d) { return fill(d.index); })
         .style("fill", function(d) { return fill(d.index); })
         .attr("d", arc)
         .style("opacity", 0)
-        /*.on("click", function(event, d) {
-            // Mostra informazioni del gene
-            showGeneInfo(d);
-    
-            // Esegui l'effetto di sfumatura sull'arco
-            const geneIndex = d.index;
-            sfumaturaARC(geneIndex);
-        })*/
         .transition().duration(1000)
         .style("opacity", 0.4);
-    
-    // Funzione showGeneInfo che riceve l'arco cliccato
-    function showGeneInfoIndex(geneIndex) {
-        //console.log("Dati dell'oggetto d:", d.index);  // Debug per verificare cosa contiene `d`
-        
-        //const geneIndex = d.index;
-        if (geneIndex >= 0 && geneIndex < NameGene.length) {
-            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
-            // Passa il nome del gene alla funzione showNodeInfo
-            showNodeInfo({ data: { name: geneName } });
-            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
-        } else {
-            console.error("Indice non valido:", geneIndex);
-            // Aggiungi un messaggio di errore
-            const infoContainer = document.getElementById("extra-info");
-            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
-        }
-    }
-    function showGeneInfo(d) {
-        console.log("Dati dell'oggetto d:", d.index);  // Debug per verificare cosa contiene `d`
-        
-        const geneIndex = d.index;
-        if (geneIndex >= 0 && geneIndex < NameGene.length) {
-            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
-            // Passa il nome del gene alla funzione showNodeInfo
-            showNodeInfo({ data: { name: geneName } });
-            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
-        } else {
-            console.error("Indice non valido:", geneIndex);
-            // Aggiungi un messaggio di errore
-            const infoContainer = document.getElementById("extra-info");
-            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
-        }
-    }
-    /* Initiate Names */
     
     g.append("svg:text")
         .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
@@ -234,33 +136,30 @@ function initializeChordChart(NameGene,matrix) {
         .attr("d", chordPath) // Usa il generatore `d3.ribbon()` per generare la geometria del path
         .attr('opacity', 0);
 
-    
-    const textCenter = svg.append("g")
+    /*const textCenter = svg.append("g")
         .attr("class", "explanationWrapper");
     
     /*Starting text middle top*/
-    var middleTextTop = textCenter.append("text")
+    /*var middleTextTop = textCenter.append("text")
         .attr("class", "explanation")
         .attr("text-anchor", "middle")
         .attr("x", 0 + "px")
         .attr("y", -24*10/2 + "px")
         .attr("dy", "1em")
         .attr("opacity", 1)
-        .text("The graph that you are gonna see is about the proteic relationship between different genes")
+        .text("carica testo 1")
         .call(wrap, 350);
     
     /*Starting text middle bottom*/
-    var middleTextBottom = textCenter.append("text")
+   /* var middleTextBottom = textCenter.append("text")
         .attr("class", "explanation")
         .attr("text-anchor", "middle")
         .attr("x", 0 + "px")
         .attr("y", 24*3/2 + "px")
         .attr("dy", "1em")
         .attr('opacity', 1)
-        .text("Il grafico è di tipo relazionale e all' esterno sono posizinati i geni e le linee interne sono le relazioni che uniscono un gene ad un altro")
+        .text("carica testo 2")
         .call(wrap, 350);
-
-    
 
     /* Storyboarding Steps */
 
@@ -271,7 +170,8 @@ function initializeChordChart(NameGene,matrix) {
     function reset() {
         stopInfiniteCycle();
         location.reload();
-        d3.select("#clicker").style("display", "block");
+        selectedArcIndexClicked=null;
+        //d3.select("#clicker").style("display", "block");
     }
 
     // Skip button
@@ -284,27 +184,20 @@ function initializeChordChart(NameGene,matrix) {
 
     // Clicker button
     d3.select("#clicker").on("click", () => {
-        d3.select("#clicker").style("display", "none");
-        d3.select("#playPause").style("display", "block");
-        d3.select("#advance").style("display", "block");
-        d3.select("#back").style("display", "block");
-
         // Mostra gli archi per un breve periodo
         d3.selectAll(".arc")
-            .transition().delay(9 * 500).duration(100)
+            .transition().delay(9 * 200).duration(100)
             .style("opacity", 0)
             .on("end", function () {
                 d3.select(this).remove();
                 if (d3.selectAll(".arc").empty()) {
-                    changeTopText("", 3 / 2, 0, 1);
-                    changeBottomText("", 2 / 2, 0, 1);
-
+                    //changeTopText("", 3 / 2, 0, 1);
+                    //changeBottomText("", 2 / 2, 0, 1);
                     startAutoAdvance(); // Avvia la sequenza automatica
                 }
             });
-        startAutoAdvance(); // Avvia la sequenza automatica
+        //startAutoAdvance(); // Avvia la sequenza automatica
     });
-
 
     // Funzione per avviare l'avanzamento automatico
     function startAutoAdvance() {
@@ -313,25 +206,24 @@ function initializeChordChart(NameGene,matrix) {
                 d3.select("#back").style("display", "block"); // Mostra "BACK" dopo il primo avanzamento
             }*/
 
-            if (counter <=dim-1) drawStep(counter);
+            if (counter <=dim-1) {
+                drawStep(counter);
+                console.log("creazione archi:",counter);
+            }
             //mettere che prende la lunghezza del vettore di nomi e scorrre fino alla metà 
             else if (counter >= dim-1 && counter <= dim*2-2) showChord(counter - (dim));
             if (counter === dim*2-1) {
                 finalChord();
                 clearInterval(autoAdvance);
-                //d3.select("#back").style("visibility", "hidden");
-                //d3.select("#playPause").style("visibility", "hidden"); 
-                //d3.select("#advance").style("visibility", "hidden");  // Nasconde "BACK" alla fine della sequenza
             }
             // se clicco advance va avanti due volte?? 
             counter++;
         }, 6000);
     }
     function showChord(sourceIndex) {
-        if(counter==8){// Rimuove i testi
-            changeTopText("", 0, 0, 1);
-            changeBottomText("", 0, 0, 1);
-    }
+        //if(counter==8){// Rimuove i testi
+            //changeTopText("", 0, 0, 1);
+            //changeBottomText("", 0, 0, 1);
         d3.selectAll("path.chord")
             //.data(chords)   //Associa i dati di `chords` alla selezione
             .transition().duration(1500)
@@ -351,8 +243,7 @@ function initializeChordChart(NameGene,matrix) {
 
     // Funzione per mettere in pausa e riprendere
     d3.select("#playPause").on("click", () => {
-        if (isCycling) return; // Non fare nulla se è attivo il ciclo infinito
-    
+        //if (isCycling) return; // se è attivo il ciclo infinito riprende quando faccio play 
         isPlaying = !isPlaying;
         const button = d3.select("#playPause");
     
@@ -366,9 +257,8 @@ function initializeChordChart(NameGene,matrix) {
     });
     
     
-
     // Advance button
-    d3.select("#advance").on("click", function () {
+    /*d3.select("#advance").on("click", function () {
         if (counter <=dim-1) {
             drawStep(counter);
             counter++;
@@ -384,11 +274,11 @@ function initializeChordChart(NameGene,matrix) {
             changeTopText("", 0, 0, 1);
             changeBottomText("", 0, 0, 1);
     } // Incrementa il contatore per andare al passaggio successivo
-    });
+    });*/
     function drawStep(index) {
         createArc(index);
-        changeTopText(``, 3 / 2, 0, 1);
-        changeBottomText("", 2 / 2, 0, 1);
+        //changeTopText(``, 3 / 2, 0, 1);
+        //changeBottomText("", 2 / 2, 0, 1);
         const geneName = NameGene[index];  // Ottieni il nome del gene
         // Passa il nome del gene alla funzione showNodeInfo
         showNodeInfo({ data: { name: geneName } })
@@ -398,6 +288,7 @@ function initializeChordChart(NameGene,matrix) {
         const providerName = NameGene[index];
         g.filter(d => d.index === index)
             .append("svg:path")
+            .append("class","arc")
             .style("stroke", d => fill(d.index))
             .style("fill", d => fill(d.index))
             .attr("d", arc)
@@ -418,44 +309,22 @@ function initializeChordChart(NameGene,matrix) {
                     .text(providerName);
             });
     }
-
     function finalChord() {
-        // Rimuove i pulsanti
-        //d3.select("#clicker").style("visibility", "hidden");
+        final= true; 
         d3.select("#skip").style("visibility", "hidden");
-        d3.select("#reset").style("display", "block");
-        d3.select("#playPause").style("display", "block");
-        d3.select("#advance").style("display", "block");
-        d3.select("#back").style("display", "block");
-
-        // Rimuove i testi
-        changeTopText("", 0, 0, 1);
-        changeBottomText("", 0, 0, 1);
-        /*changeTopText(newText = "",
-				loc = 0, delayDisappear = 0, delayAppear = 1);
-			changeBottomText(newText = "",
-				loc = 0, delayDisappear = 0, delayAppear = 1); */
-
-        // Crea o mostra gli archi
-        /*if (counter <= dim) {
-            g.append("svg:path")
-                .style("stroke", d => fill(d.index))
-                .style("fill", d => fill(d.index))
-                .attr("d", arc)
-                .style("opacity", 0)
-                .transition().duration(1000)
-                .style("opacity", 1);
-        } else {
-            svg.selectAll("g.group").select("path")
-                .transition().duration(1000)
-                .style("opacity", 1);
-        }*/
+       
+       if(counter<=dim){
+        while(counter<=dim){
+            createArc(counter);
+            counter++;
+        }
+       }
         /*d3.selectAll(".arc")
             .transition().delay(9 * 500).duration(100)
-            .style("opacity", 0)*/
+            .style("opacity", 0)
         svg.selectAll("g.group").select("path")
             .transition().duration(1000)
-            .style("opacity", 1);
+            .style("opacity", 1);*/
 
         // Rende visibili le interazioni mouseover e mouseout
         d3.selectAll("path.arc")
@@ -466,12 +335,11 @@ function initializeChordChart(NameGene,matrix) {
                 // Esegui l'effetto di sfumatura sull'arco
                 const geneIndex = d.index;
                 sfumaturaARC(geneIndex);
-
         });
 
         // Mostra tutte le chords
         // Assicurati che le "chords" siano selezionate correttamente
-        chords_inside.transition().duration(1000)
+        chords_inside.transition().duration(100)
             .style("opacity", 0.6);
 
 
@@ -483,10 +351,11 @@ function initializeChordChart(NameGene,matrix) {
         if(counter<= dim-1){
             svg.selectAll("g.group")
             .transition().duration(70)
+            .selectAll(".titles").style("opacity", 0)
             .selectAll(".titles").style("opacity", 1);
         }
         counter=dim*2+dim; // blocca avanzamento autoplay = dim +1 generalizzato 
-        startInfiniteCycle();
+        startInfiniteCycle(0);
     }
 
 
@@ -530,21 +399,50 @@ function initializeChordChart(NameGene,matrix) {
             }
         });
     }
-
+    function showGeneInfo(d) {
+        console.log("Dati dell'oggetto d:", d.index);  // Debug per verificare cosa contiene `d`
+        
+        const geneIndex = d.index;
+        if (geneIndex >= 0 && geneIndex < NameGene.length) {
+            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
+            // Passa il nome del gene alla funzione showNodeInfo
+            showNodeInfo({ data: { name: geneName } });
+            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
+        } else {
+            console.error("Indice non valido:", geneIndex);
+            // Aggiungi un messaggio di errore
+            const infoContainer = document.getElementById("extra-info");
+            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
+        }
+    }
+    function showGeneInfoIndex(geneIndex) { // Debug per verificare cosa contiene `d`
+        //const name = geneName[geneIndex];
+        if (geneIndex >= 0 && geneIndex < NameGene.length) {
+            const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
+            // Passa il nome del gene alla funzione showNodeInfo
+            showNodeInfo({ data: { name: geneName } });
+            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
+        } else {
+            console.error("Indice non valido:", geneIndex);
+            // Aggiungi un messaggio di errore
+            const infoContainer = document.getElementById("extra-info");
+            infoContainer.innerHTML = "<p>Informazioni non disponibili per il gene.</p>";
+        }
+    }
     /*Transition the top circle text*/
-    function changeTopText (newText, loc, delayDisappear, delayAppear, finalText, xloc, w) {
+    /*function changeTopText (newText, loc, delayDisappear, delayAppear, finalText, xloc, w) {
 
-        /*If finalText is not provided, it is not the last text of the Draw step*/
+        /*If finalText is not provided, it is not the last text of the Draw step
         if(typeof(finalText)==='undefined') finalText = false;
         
         if(typeof(xloc)==='undefined') xloc = 0;
         if(typeof(w)==='undefined') w = 350;
         
-        middleTextTop	
-            /*Current text disappear*/
+        /*middleTextTop	
+            /*Current text disappear
             .transition().delay(700 * delayDisappear).duration(700)
             .attr('opacity', 0)	
-            /*New text appear*/
+            /*New text appear
             .call(endall,  function() {
                 middleTextTop.text(newText)
                 .attr("y", -24*loc + "px")
@@ -566,12 +464,12 @@ function initializeChordChart(NameGene,matrix) {
     };/*changeTopText */
 
     /*Transition the bottom circle text*/
-    function changeBottomText (newText, loc, delayDisappear, delayAppear) {
+    /*function changeBottomText (newText, loc, delayDisappear, delayAppear) {
         middleTextBottom
-            /*Current text disappear*/
+            /*Current text disappear
             .transition().delay(700 * delayDisappear).duration(700)
             .attr('opacity', 0)
-            /*New text appear*/
+            /*New text appear
             .call(endall,  function() {
                 middleTextBottom.text(newText)
                 .attr("y", 24*loc + "px")
@@ -630,111 +528,140 @@ function initializeChordChart(NameGene,matrix) {
     });*/
 
     let currentNode = null; // Nodo corrente per il ciclo infinito
-let cycleInterval = null; // Variabile per l'intervallo del ciclo infinito
+    let cycleInterval = null; // Variabile per l'intervallo del ciclo infinito
 
-// Funzione per avviare il ciclo infinito
-function startInfiniteCycle(initialNode) {
-    if (cycleInterval) {
-        clearInterval(cycleInterval); // Ferma il ciclo precedente
-    }
+    // Funzione per avviare il ciclo infinito
+    /*function startInfiniteCycle(initialNode) {
+        if (cycleInterval) {
+            clearInterval(cycleInterval); // Ferma il ciclo precedente
+        }
 
-    currentNode = initialNode || currentNode; // Imposta il nodo iniziale
-    if (!currentNode) {
-        console.error("Nessun nodo selezionato per avviare il ciclo infinito.");
-        return;
-    }
-
-    cycleInterval = setInterval(() => {
+        currentNode = initialNode || currentNode; // Imposta il nodo iniziale
         if (!currentNode) {
-            clearInterval(cycleInterval);
-            console.error("Ciclo interrotto: nodo corrente non valido.");
+            //currentNode=0;
+            console.error("Nessun nodo selezionato per avviare il ciclo infinito.");
             return;
         }
 
-        // Resetta l'evidenziazione prima di procedere
+        cycleInterval = setInterval(() => {
+            if (!currentNode) {
+                clearInterval(cycleInterval);
+                console.error("Ciclo interrotto: nodo corrente non valido.");
+                return;
+            }
+
+            // Resetta l'evidenziazione prima di procedere
+            resetHighlight();
+
+            // Evidenzia il nodo corrente
+            d3.select(currentNode.node)
+                .select("circle")
+                .attr("fill", "red");
+
+            d3.select(currentNode.node)
+                .select("text")
+                .attr("fill", "red")
+                .style("font-size", "14px");
+
+            d3.selectAll(".link")
+                .filter(link => link.target === currentNode)
+                .attr("stroke", "red");
+
+            // Passa al nodo successivo (o torna alla radice se alla fine)
+            currentNode = getNextNode(currentNode);
+
+        }, 1000); // Intervallo di 1 secondo
+    }*/
+    function startInfiniteCycle(index){
+        //if(genecliccato)_>allora cambia index
+        //for n va da 0 a dim-1 e ricomincia 
+        let index1=index;
+        //let count=0;// da cambiare appena parte la prima volta perchè se no se clicco il primo aspetta sempre 
+        autoAdvance = setInterval(() => {
+            if (index1==dim){
+                index1=0
+            }
+            if(index1<dim){
+                if(selectedArcIndexClicked!=index1 && selectedArcIndexClicked!=null){
+                    console.log("index:",index1)
+                    console.log("selectedrcIndex:", selectedArcIndexClicked)
+                    showGeneInfoIndex(selectedArcIndexClicked)
+                    sfumaturaARC(selectedArcIndexClicked)
+                    index1=selectedArcIndexClicked;
+                    selectedArcIndexClicked=null
+                    if(index1==dim-1){
+                        index=0
+                    }
+                }
+                showGeneInfoIndex(index1)
+                sfumaturaARC(index1)
+            }
+            // se clicco advance va avanti due volte?? 
+            index1++;
+        }, 6000);
+        
+    }
+
+    // Funzione per ottenere il prossimo nodo
+    function getNextNode(node) {
+        if (node.children && node.children.length > 0) {
+            return node.children[0]; // Passa al primo figlio
+        } else if (node.parent) {
+            return node.parent; // Torna al genitore se è una foglia
+        } else {
+            return null; // Fine ciclo
+        }
+    }
+
+    // Funzione per interrompere il ciclo
+    function stopInfiniteCycle() {
+        if (cycleInterval) {
+            clearInterval(cycleInterval);
+            cycleInterval = null;
+        }
+    }
+
+    // Funzione aggiornata evidenziaArc per modificare il nodo corrente
+    function evidenziaArc(geneName) {
+        const targetNode = d3.selectAll(".node")
+            .filter(function (d) {
+                return d.data.name === geneName;
+            })
+            .datum();
+
+        if (!targetNode) {
+            console.error(`Nodo non trovato per il gene: ${geneName}`);
+            return;
+        }
+
+        // Resetta l'evidenziazione esistente
         resetHighlight();
 
-        // Evidenzia il nodo corrente
-        d3.select(currentNode.node)
-            .select("circle")
-            .attr("fill", "red");
+        // Evidenzia il percorso dal nodo al genitore
+        let current = targetNode;
+        while (current) {
+            d3.select(current.node) // Evidenzia il nodo
+                .select("circle")
+                .attr("fill", "orange");
 
-        d3.select(currentNode.node)
-            .select("text")
-            .attr("fill", "red")
-            .style("font-size", "14px");
+            d3.select(current.node) // Evidenzia il testo
+                .select("text")
+                .attr("fill", "orange")
+                .style("font-size", "14px");
 
-        d3.selectAll(".link")
-            .filter(link => link.target === currentNode)
-            .attr("stroke", "red");
+            d3.selectAll(".link") // Evidenzia il collegamento verso il genitore
+                .filter(link => link.target === current)
+                .attr("stroke", "orange");
 
-        // Passa al nodo successivo (o torna alla radice se alla fine)
-        currentNode = getNextNode(currentNode);
+            current = current.parent; // Passa al nodo genitore
+        }
 
-    }, 1000); // Intervallo di 1 secondo
-}
+        // Imposta il nodo selezionato come nodo corrente per il ciclo infinito
+        currentNode = targetNode;
 
-// Funzione per ottenere il prossimo nodo
-function getNextNode(node) {
-    if (node.children && node.children.length > 0) {
-        return node.children[0]; // Passa al primo figlio
-    } else if (node.parent) {
-        return node.parent; // Torna al genitore se è una foglia
-    } else {
-        return null; // Fine ciclo
+        // Riavvia il ciclo infinito dal nuovo nodo
+        startInfiniteCycle(currentNode);
     }
-}
-
-// Funzione per interrompere il ciclo
-function stopInfiniteCycle() {
-    if (cycleInterval) {
-        clearInterval(cycleInterval);
-        cycleInterval = null;
-    }
-}
-
-// Funzione aggiornata evidenziaArc per modificare il nodo corrente
-function evidenziaArc(geneName) {
-    const targetNode = d3.selectAll(".node")
-        .filter(function (d) {
-            return d.data.name === geneName;
-        })
-        .datum();
-
-    if (!targetNode) {
-        console.error(`Nodo non trovato per il gene: ${geneName}`);
-        return;
-    }
-
-    // Resetta l'evidenziazione esistente
-    resetHighlight();
-
-    // Evidenzia il percorso dal nodo al genitore
-    let current = targetNode;
-    while (current) {
-        d3.select(current.node) // Evidenzia il nodo
-            .select("circle")
-            .attr("fill", "orange");
-
-        d3.select(current.node) // Evidenzia il testo
-            .select("text")
-            .attr("fill", "orange")
-            .style("font-size", "14px");
-
-        d3.selectAll(".link") // Evidenzia il collegamento verso il genitore
-            .filter(link => link.target === current)
-            .attr("stroke", "orange");
-
-        current = current.parent; // Passa al nodo genitore
-    }
-
-    // Imposta il nodo selezionato come nodo corrente per il ciclo infinito
-    currentNode = targetNode;
-
-    // Riavvia il ciclo infinito dal nuovo nodo
-    startInfiniteCycle(currentNode);
-}
-
 
 }
 Promise.all([

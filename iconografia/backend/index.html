@@ -30,13 +30,12 @@
             <div class="legend" id="legend"></div>
             <div class="buttons-container">
                 <button id="skip" class="sideButton">SKIP INTRO</button>
-                <button id="reset" class="sideButton begin_hidden">RESET</button>
-                <button id="playPause" class="sideButton begin_hidden">PAUSE</button><!--mostrare solo dopo let's start-->
+                <button id="back" class="sideButton">BACK</button>
+                <button id="playPause" class="sideButton">PAUSE</button>
                 <button id="clicker" class="sideButton">LET'S START</button>
-                <button id="advance" class="sideButton begin_hidden">ADVANCE</button><!--mostrare solo dopo let's start-->
-                <button id="back" class="sideButton begin_hidden">BACK</button><!--mostrare solo dopo let's start-->
-                <button id="stop" style="display: none;">STOP</button>
-
+                <button id="advance" class="sideButton">ADVANCE</button>
+                <!--<button id="stop" style="display: none;">STOP</button>-->
+                <button id="reset" class="sideButton ">RESET</button>
             </div>
         </div>
 
@@ -54,6 +53,7 @@
     <script>
         let NameGene=[];
         let svg;
+        let final=false; 
     </script>
     <script src="chord.js"></script>
     <script src="tree.js"></script>

@@ -239,7 +239,7 @@ function initializeTreeChart(data) {
         showNodeInfo(d);
     });*/
     function highlightPath(d) {
-        // Console log per il nome del nodo, utile per il debug
+        if(final==true){// Console log per il nome del nodo, utile per il debug
         console.log("nome d", d.data.name);
         evidenziaArc(d.data.name);
         let current = d;
@@ -263,7 +263,8 @@ function initializeTreeChart(data) {
         }
     
         // Evidenziazione del nome del nodo
-        d3.select("#selected-node").text(d.data.name).style("color", "orange");
+        d3.select("#selected-node").text(d.data.name).style("color", "orange");}
+        
     }
     
     // Funzione per mostrare i dettagli del nodo cliccato
@@ -324,20 +325,22 @@ function initializeTreeChart(data) {
     // Associa l'evento click ai nodi dell'albero per mostrare i dettagli solo se è una foglia
     d3.selectAll(".node").on("click", function(event, d) {
         // Verifica se il nodo è una foglia
+        if(final==true){
         if (isLeafNode(d)) {
             // Resetta l'evidenziazione
             resetHighlight();
     
             // Evidenzia il nodo cliccato
-            highlightPath(d);
-            selectedNode = d; // Salva il nodo selezionato
+                highlightPath(d);
+                selectedNode = d; // Salva il nodo selezionato
     
             // Mostra le informazioni del nodo cliccato
-            showNodeInfo(d);
+                showNodeInfo(d);
         } else {
             console.log("Nodo non foglia cliccato. Nessuna azione.");
         }
-    });
+    }
+});
     
 }
 
