@@ -334,6 +334,7 @@ function initializeChordChart(NameGene,matrix) {
                 showGeneInfo(d);
                 // Esegui l'effetto di sfumatura sull'arco
                 const geneIndex = d.index;
+                selectedArcIndexClicked=geneIndex;
                 sfumaturaARC(geneIndex);
         });
 
@@ -592,6 +593,7 @@ function initializeChordChart(NameGene,matrix) {
                     if(index1==dim-1){
                         index=0
                     }
+                    //settare il bottone di pausa funzinante in automatico e cambiare icona con play se si vuole far ripartire
                 }
                 showGeneInfoIndex(index1)
                 sfumaturaARC(index1)
