@@ -21,7 +21,6 @@ function showNodeInfo(nodeData) {
                         <p><strong>Scoperta:</strong> ${geneInfo.scoperta}</p>
                         <p><strong>Posizione del filamento:</strong> ${geneInfo.posizione_del_filamento}</p>
                         <p><strong>Importanza clinica:</strong> ${geneInfo.importanza_clinica}</p>
-                        <p><strong>Altri dettagli:</strong> ${geneInfo.applicazioni_biotecnologiche || geneInfo.terapie_correlate || ""}</p>
                     </div>
                 `;
             } else {
@@ -299,10 +298,10 @@ function initializeTreeChart(data) {
                         infoHtml += `<p><strong>Importanza clinica:</strong> ${geneInfo.importanza_clinica}</p>`;
                     }
     
-                    const biotechnologicalInfo = geneInfo.applicazioni_biotecnologiche || geneInfo.terapie_correlate;
+                    /*const biotechnologicalInfo = geneInfo.applicazioni_biotecnologiche || geneInfo.terapie_correlate;
                     if (biotechnologicalInfo) {
                         infoHtml += `<p><strong>Altri dettagli:</strong> ${biotechnologicalInfo}</p>`;
-                    }
+                    }*/
     
                     infoHtml += `</div>`;
     

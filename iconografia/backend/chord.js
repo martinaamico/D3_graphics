@@ -111,7 +111,7 @@ function initializeChordChart(NameGene,matrix) {
         .transition().duration(1000)
         .style("opacity", 0.4);
     
-    g.append("svg:text")
+    /*g.append("svg:text")
         .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
         .attr("dy", ".35em")
         .attr("class", "titles")
@@ -123,7 +123,7 @@ function initializeChordChart(NameGene,matrix) {
                 + (d.angle > Math.PI ? "rotate(180)" : "");
         })
         .attr('opacity', 0)
-        .text(function(d,i) { return NameGene[i]; });  
+        .text(function(d,i) { return NameGene[i]; });  */
     
     /* Initiate inner chords */
 
@@ -136,22 +136,22 @@ function initializeChordChart(NameGene,matrix) {
         .attr("d", chordPath) // Usa il generatore `d3.ribbon()` per generare la geometria del path
         .attr('opacity', 0);
 
-    /*const textCenter = svg.append("g")
+    const textCenter = svg.append("g")
         .attr("class", "explanationWrapper");
     
     /*Starting text middle top*/
-    /*var middleTextTop = textCenter.append("text")
+    var middleTextTop = textCenter.append("text")
         .attr("class", "explanation")
         .attr("text-anchor", "middle")
         .attr("x", 0 + "px")
         .attr("y", -24*10/2 + "px")
         .attr("dy", "1em")
         .attr("opacity", 1)
-        .text("carica testo 1")
+        .text("Premi play per viasualizzare lo story telling o premi skip per saltare la costruzione del grafico e interagire con esso")
         .call(wrap, 350);
     
     /*Starting text middle bottom*/
-   /* var middleTextBottom = textCenter.append("text")
+   var middleTextBottom = textCenter.append("text")
         .attr("class", "explanation")
         .attr("text-anchor", "middle")
         .attr("x", 0 + "px")
@@ -205,13 +205,15 @@ function initializeChordChart(NameGene,matrix) {
             /*if (counter === 1) {
                 d3.select("#back").style("display", "block"); // Mostra "BACK" dopo il primo avanzamento
             }*/
+            changeTopText("", 0, 0, 1);
+            changeBottomText("", 0, 0, 1);
 
             if (counter <=dim-1) {
                 drawStep(counter);
                 console.log("creazione archi:",counter);
             }
             //mettere che prende la lunghezza del vettore di nomi e scorrre fino alla metà 
-            else if (counter >= dim-1 && counter <= dim*2-2) showChord(counter - (dim));
+            else if (counter >= dim-1 && counter <= dim*2-1) showChord(counter - (dim));
             if (counter === dim*2-1) {
                 finalChord();
                 clearInterval(autoAdvance);
@@ -255,7 +257,20 @@ function initializeChordChart(NameGene,matrix) {
             button.text("PLAY");
         }
     });
-    
+    /*
+    d3.select("#playPause").on("click", () => {
+    isPlaying = !isPlaying;
+    const button = d3.select("#playPause");
+
+    if (isPlaying) {
+        startInfiniteCycle(currentNode || 0); // Riprendi dal nodo corrente o 0
+        button.text("PAUSE");
+    } else {
+        clearInterval(cycleInterval); // Ferma il ciclo infinito
+        button.text("PLAY");
+    }
+});
+*/
     
     // Advance button
     /*d3.select("#advance").on("click", function () {
@@ -286,14 +301,15 @@ function initializeChordChart(NameGene,matrix) {
     }
     function createArc(index) {
         const providerName = NameGene[index];
+        console.log("nome :",providerName)
         g.filter(d => d.index === index)
-            .append("svg:path")
-            .append("class","arc")
+            .append("path")
+            .attr("class", "arc")
             .style("stroke", d => fill(d.index))
             .style("fill", d => fill(d.index))
             .attr("d", arc)
             .style("opacity", 0)
-            .transition().duration(300)
+            .transition().duration(1000)
             .style("opacity", 1)
             .on("end", () => {
                 g.filter(d => d.index === index)
@@ -304,7 +320,7 @@ function initializeChordChart(NameGene,matrix) {
                     .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
                     .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
                     .attr("opacity", 0)
-                    .transition().duration(100)
+                    .transition().duration(50)
                     .attr("opacity", 1)
                     .text(providerName);
             });
@@ -312,8 +328,12 @@ function initializeChordChart(NameGene,matrix) {
     function finalChord() {
         final= true; 
         d3.select("#skip").style("visibility", "hidden");
-       
-       if(counter<=dim){
+        console.log("al final chord il counter vale : ",counter)
+       //counter=0;
+       //svg.selectAll(".arc").remove();
+       changeTopText(" ", 0, 0, 1);
+       changeBottomText("", 0, 0, 1);
+       if(counter<dim){
         while(counter<=dim){
             createArc(counter);
             counter++;
@@ -355,7 +375,8 @@ function initializeChordChart(NameGene,matrix) {
             .selectAll(".titles").style("opacity", 0)
             .selectAll(".titles").style("opacity", 1);
         }
-        counter=dim*2+dim; // blocca avanzamento autoplay = dim +1 generalizzato 
+        //counter=dim*2+dim; // blocca avanzamento autoplay = dim +1 generalizzato 
+        counter=dim;
         startInfiniteCycle(0);
     }
 
@@ -422,7 +443,7 @@ function initializeChordChart(NameGene,matrix) {
             const geneName = NameGene[geneIndex];  // Ottieni il nome del gene
             // Passa il nome del gene alla funzione showNodeInfo
             showNodeInfo({ data: { name: geneName } });
-            highlightPathbyName(geneName);  // Evidenzia il percorso del gene
+            //highlightPathbyName(geneName);  // Evidenzia il percorso del gene
         } else {
             console.error("Indice non valido:", geneIndex);
             // Aggiungi un messaggio di errore
@@ -431,19 +452,19 @@ function initializeChordChart(NameGene,matrix) {
         }
     }
     /*Transition the top circle text*/
-    /*function changeTopText (newText, loc, delayDisappear, delayAppear, finalText, xloc, w) {
+    function changeTopText (newText, loc, delayDisappear, delayAppear, finalText, xloc, w) {
 
-        /*If finalText is not provided, it is not the last text of the Draw step
+        /*If finalText is not provided, it is not the last text of the Draw step*/
         if(typeof(finalText)==='undefined') finalText = false;
         
         if(typeof(xloc)==='undefined') xloc = 0;
         if(typeof(w)==='undefined') w = 350;
         
-        /*middleTextTop	
-            /*Current text disappear
+        middleTextTop	
+            /*Current text disappear*/
             .transition().delay(700 * delayDisappear).duration(700)
             .attr('opacity', 0)	
-            /*New text appear
+            /*New text appear*/
             .call(endall,  function() {
                 middleTextTop.text(newText)
                 .attr("y", -24*loc + "px")
@@ -465,12 +486,12 @@ function initializeChordChart(NameGene,matrix) {
     };/*changeTopText */
 
     /*Transition the bottom circle text*/
-    /*function changeBottomText (newText, loc, delayDisappear, delayAppear) {
+    function changeBottomText (newText, loc, delayDisappear, delayAppear) {
         middleTextBottom
-            /*Current text disappear
+            /*Current text disappear*/
             .transition().delay(700 * delayDisappear).duration(700)
             .attr('opacity', 0)
-            /*New text appear
+            /*New text appear*/
             .call(endall,  function() {
                 middleTextBottom.text(newText)
                 .attr("y", 24*loc + "px")
@@ -573,7 +594,36 @@ function initializeChordChart(NameGene,matrix) {
 
         }, 1000); // Intervallo di 1 secondo
     }*/
-    function startInfiniteCycle(index){
+        function startInfiniteCycle(index) {
+            if (autoAdvance) {
+                clearInterval(autoAdvance); // Ferma eventuali cicli attivi
+            }
+            let index1 = index;
+            cycleInterval = setInterval(() => {
+                if (index1 === dim) {
+                    index1 = 0;
+                }
+                if(index1<dim){
+                    if(selectedArcIndexClicked!=index1 && selectedArcIndexClicked!=null){
+                        console.log("index:",index1)
+                        console.log("selectedrcIndex:", selectedArcIndexClicked)
+                        showGeneInfoIndex(selectedArcIndexClicked)
+                        sfumaturaARC(selectedArcIndexClicked)
+                        index1=selectedArcIndexClicked;
+                        selectedArcIndexClicked=null
+                        if(index1==dim-1){
+                            index=0
+                        }
+                        //settare il bottone di pausa funzinante in automatico e cambiare icona con play se si vuole far ripartire
+                    }
+                    showGeneInfoIndex(index1)
+                    sfumaturaARC(index1)
+                }
+                // se clicco advance va avanti due volte?? 
+                index1++;
+            }, 6000);
+        }
+    /*function startInfiniteCycle(index){
         //if(genecliccato)_>allora cambia index
         //for n va da 0 a dim-1 e ricomincia 
         let index1=index;
@@ -602,7 +652,8 @@ function initializeChordChart(NameGene,matrix) {
             index1++;
         }, 6000);
         
-    }
+    }*/
+    
 
     // Funzione per ottenere il prossimo nodo
     function getNextNode(node) {
