@@ -138,13 +138,13 @@ h1,h2{
 
 /* Icone */
 #playPause:before {
-    content: '\23F8'; /* Simbolo pausa (Unicode) */
+    /*content: '\23F8'; /* Simbolo pausa (Unicode) */
     font-size: 18px;
 }
 
-#playPause.playing:before {
-    content: '\25B6'; /* Simbolo play (Unicode) */
-}
+/*#playPause.playing:before {
+    content: '\25B6'; /* Simbolo play (Unicode) 
+}*/
 
 #advance:before {
     content: '\23E9'; /* Doppia freccia avanti (Unicode) */
