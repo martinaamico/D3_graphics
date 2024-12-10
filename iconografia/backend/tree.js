@@ -129,8 +129,8 @@ function initializeTreeChart(data) {
         
         const svgdx = d3.select("#tree-chart")
              .append("svg")
-             .attr("width", widthdx)  // Width is set to container width
-             .attr("height", heightdx) // You can also set a dynamic height if necessary
+             .attr("width", widthdx+40)  // Width is set to container width
+             .attr("height", heightdx+40) // You can also set a dynamic height if necessary
              .attr("viewBox", [-dy / 1.5, x0 - dx, widthdx, heightdx]) // Ensure it fits within the container
              .attr("style", "font: 10px sans-serif;")
              //.attr("preserveAspectRatio", "xMidYMid meet"); // Ensures the aspect ratio is maintained
@@ -167,15 +167,50 @@ function initializeTreeChart(data) {
         .attr("fill", "#000")
         .attr("r", 4)
         .style("cursor", "pointer"); // Imposta il cursore "pointer" sui cerchi
+    
+        node.append("text")
+        .attr("dy", d => {
+            if (!d.parent || !d.children) {
+                // Radice o foglia: testo in linea con il nodo
+                return "0.31em";
+            } else {
+                // Nodo intermedio: testo sopra o sotto il nodo
+                return d.x > 0 ? "1.1em" : "-1em";
+            }
+        })
+        .attr("x", d => {
+            if (!d.parent || !d.children) {
+                // Radice o foglia: testo a sinistra o destra
+                return d.children ? -8 : 8;
+            } else {
+                // Nodo intermedio: testo centrato orizzontalmente
+                return 0;
+            }
+        })
+        .attr("text-anchor", d => {
+            if (!d.parent || !d.children) {
+                // Radice o foglia: testo a sinistra o destra
+                return d.children ? "end" : "start";
+            } else {
+                // Nodo intermedio: testo centrato
+                return "middle";
+            }
+        })
+        .text(d => d.data.name)
+        .attr("fill", "#000")
+        .style("cursor", "pointer");
+    
+    
 
         // Testo dei nodi
-    node.append("text")
+    /*node.append("text")
         .attr("dy", "0.31em")
         .attr("x", d => d.children ? -8 : 8) // Testo a sinistra o destra
         .attr("text-anchor", d => d.children ? "end" : "start")
         .text(d => d.data.name)
         .attr("fill", "#000") // Testo nero
         .style("cursor", "pointer"); // Imposta il cursore "pointer" sui testi
++/
 
     // Funzione per evidenziare il percorso
     /*function highlightPath(d) {

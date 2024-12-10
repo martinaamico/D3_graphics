@@ -31,6 +31,12 @@ h1,h2{
 .left-container h1,
 .left-container h2 {
     color: rgba(42, 42, 90, 0.793);
+    font-size: 30px;
+}
+.left-container h2{
+     margin-top: 0px;
+     padding-top: 0;
+
 }
 .right-container h1,
 .right-container h2 {
@@ -52,6 +58,10 @@ h1,h2{
 #tree-div{
     background-color:rgb(255, 255, 255);
     /*border-radius: 5%;*/
+}
+.tree-chart{
+    padding-left: 3%;
+    padding-top: 1%;
 }
 /*#extra-div{
     background-color: rgba(162, 101, 219, 0.21);
@@ -210,4 +220,64 @@ h1,h2{
     height: 40%; /* or set a fixed height */
     overflow: hidden; /* Prevent the SVG from overflowing */
     position: relative; /* Needed to properly contain the SVG */
+}
+#speedRange {
+    width: 300px;
+    margin: 0 10px;
+    background: #333; /* Colore di sfondo per il track */
+}
+
+#speedRange::-webkit-slider-runnable-track {
+    height: 8px;
+    background: rgba(42, 42, 90, 0.8);;
+}
+
+#speedRange::-webkit-slider-thumb {
+    background: rgba(76, 90, 42, 0.8);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+#speedRange::-moz-range-track {
+    height: 8px;
+    background: rgba(119, 179, 23, 0.8);;
+}
+
+#speedRange::-moz-range-thumb {
+    background: #a6aeb8;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+#speedLabel {
+    font-weight: bold;
+}
+#download-dataset {
+    background-color: rgb(255, 255, 255); /* Colore di sfondo specifico */
+    color: rgb(0, 0, 0); /* Colore del testo */
+    padding: 10px 20px; /* Spaziatura */
+    font-size: 16px; /* Dimensione del testo */
+    border-radius: 5px; /* Angoli arrotondati */
+    border: none; /* Rimuovi bordo */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transizione fluida per l'hover */
+    display: inline-flex; /* Per centrare contenuto */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra orizzontalmente */
+    gap: 8px; /* Spazio tra testo e icona */
+}
+
+#download-dataset:hover {
+    background-color: #d7eafa; /* Colore più scuro all'hover */
+}
+
+/* Aggiungi un'icona opzionale */
+#download-dataset::before {
+    content: "⬇️"; /* Icona Unicode per download */
+    font-size: 18px;
+    margin-right: 8px;
 }
