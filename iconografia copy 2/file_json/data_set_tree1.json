@@ -1,0 +1,31 @@
+{
+    "name": "Ruoli",
+    "children": [
+        {
+            "name": "GestioneProgetti",
+            "children": [
+                { "name": "Project Manager", "value": 5 }
+            ]
+        },
+        {
+            "name": "SviluppoSoftware",
+            "children": [
+                { "name": "Web Developer", "value": 20 },
+                { "name": "Backend Developer", "value": 15 }
+            ]
+        },
+        {
+            "name": "AnalisiDati",
+            "children": [
+                { "name": "Data Analyst", "value": 15 },
+                { "name": "Data Scientist", "value": 20 }
+            ]
+        },
+        {
+            "name": "Cloud",
+            "children": [
+                { "name": "Cloud Architect", "value": 10 }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,92 @@
+{
+    "GeneOntology": {
+        "GestioneProgetti": {
+            "ProjectManager": [
+                {
+                    "nome": "Project Manager",
+                    "spiegazione_della_funzione": "Il Project Manager pianifica, esegue e chiude progetti, garantendo il rispetto di tempi, budget e qualità.",
+                    "competenze_richieste": [
+                        "Leadership e gestione team",
+                        "Conoscenza metodologie gestione progetti (Agile, Scrum, Waterfall)",
+                        "Competenze comunicazione e negoziazione",
+                        "Conoscenza strumenti project management"
+                    ],
+                    "test_per_assumere": "Test su leadership, problem solving, esperienze in gestione progetti e colloquio su stress e conflitto.",
+                    "altre_informazioni": "Esperienza in IT o progetti tecnologici è preferita."
+                }
+            ]
+        },
+        "SviluppoSoftware": {
+            "WebDeveloper": [
+                {
+                    "nome": "Web Developer",
+                    "spiegazione_della_funzione": "Il Web Developer progetta, sviluppa e mantiene siti e applicazioni web, implementando interfaccia utente e funzionalità back-end.",
+                    "competenze_richieste": [
+                        "Ottima conoscenza di HTML, CSS, JavaScript",
+                        "Esperienza con framework come React, Angular, Vue.js",
+                        "Conoscenza server-side programming (Node.js, Python, PHP)",
+                        "Esperienza con database relazionali e NoSQL"
+                    ],
+                    "test_per_assumere": "Prove pratiche di coding, revisione portafoglio progetti, colloquio tecnico su sviluppo web.",
+                    "altre_informazioni": "Un Web Developer deve avere un buon senso estetico e una solida comprensione dell'esperienza utente (UX)."
+                },
+                {
+                    "nome": "Backend Developer",
+                    "spiegazione_della_funzione": "Il Backend Developer sviluppa la parte server di un'applicazione, compreso il database e la logica di business, garantendo il corretto funzionamento del sistema.",
+                    "competenze_richieste": [
+                        "Conoscenza approfondita di linguaggi di programmazione come Python, Java, Ruby, Go",
+                        "Esperienza con database SQL e NoSQL",
+                        "Capacità di ottimizzare il codice per alte prestazioni",
+                        "Esperienza con API RESTful e microservizi"
+                    ],
+                    "test_per_assumere": "Prove pratiche su progettazione di API, ottimizzazione query SQL e gestione dati.",
+                    "altre_informazioni": "Il Backend Developer deve concentrarsi su sicurezza e gestione efficiente delle risorse di sistema."
+                }
+            ]
+        },
+        "AnalisiDati": {
+            "DataAnalyst": [
+                {
+                    "nome": "Data Analyst",
+                    "spiegazione_della_funzione": "Il Data Analyst raccoglie, elabora e analizza i dati per fornire informazioni che aiutino l'azienda a prendere decisioni basate su questi.",
+                    "competenze_richieste": [
+                        "Competenze in analisi statistica e matematica",
+                        "Conoscenza di strumenti di analisi come Excel, Tableau, Power BI",
+                        "Conoscenza di SQL per estrazione dati"
+                    ],
+                    "test_per_assumere": "Test pratici su dataset reali, creazione di report significativi e comunicazione dei risultati a stakeholders non tecnici.",
+                    "altre_informazioni": "Il Data Analyst deve avere curiosità e capacità di tradurre i dati in insight chiari per tutte le funzioni aziendali."
+                }
+            ],
+            "DataScientist": [
+                {
+                    "nome": "Data Scientist",
+                    "spiegazione_della_funzione": "Il Data Scientist applica tecniche di machine learning e AI per analizzare grandi set di dati, sviluppando modelli predittivi e ottimizzando i processi aziendali.",
+                    "competenze_richieste": [
+                        "Conoscenza di linguaggi di programmazione come Python, R",
+                        "Esperienza con librerie di machine learning (TensorFlow, PyTorch, scikit-learn)"
+                       
+                    ],
+                    "test_per_assumere": "Prove pratiche su machine learning, analisi di dataset complessi e creazione di modelli predittivi. Colloquio tecnico su algoritmi e approcci statistici.",
+                    "altre_informazioni": "Il Data Scientist deve affrontare problemi complessi con approcci innovativi e comunicare i risultati a team non tecnici."
+                }
+            ]
+        },
+        "Cloud": {
+            "CloudArchitect": [
+                {
+                    "nome": "Cloud Architect",
+                    "spiegazione_della_funzione": "Il Cloud Architect progetta e gestisce infrastrutture cloud, garantendo che siano scalabili, sicure e performanti.",
+                    "competenze_richieste": [
+                        "Conoscenza delle principali piattaforme cloud (AWS, Azure, Google Cloud)",
+                        "Esperienza nella progettazione di soluzioni scalabili e sicure",
+                        "Conoscenza di reti e sicurezza informatica",
+                        "Esperienza con DevOps e automazione"
+                    ],
+                    "test_per_assumere": "Valutazione nella progettazione di architetture cloud, colloquio tecnico su best practices e sicurezza del cloud.",
+                    "altre_informazioni": "Il Cloud Architect deve avere una visione strategica e lavorare con diverse funzioni aziendali per implementare soluzioni adeguate."
+                }
+            ]
+        }
+    }
+}

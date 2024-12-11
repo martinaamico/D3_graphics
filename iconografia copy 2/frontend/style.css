@@ -127,7 +127,7 @@ h1,h2{
 }
 
 #extra-info .gene-info::after {
-    content: "🧬"; /* Icona del gene */
+    content: "💻"; /* Icona del gene */
     position: absolute;
     top: 10px;
     right: 10px;
@@ -217,6 +217,9 @@ h1,h2{
     text-align: center;
     flex: 1; /* Lascia che il titolo occupi spazio centrale */
 }
+.header-container h1{
+font-size: 29px;
+}
 /*.title-section {
     flex: 1; /* Consente alla sezione del titolo di occupare tutto lo spazio disponibile 
     text-align: center; /* Centra il contenuto all'interno 
@@ -235,4 +238,7 @@ h1,h2{
 
 #download-dataset:hover {
     background-color: #d7eafa;
+}
+.right-container h2{
+    font-size: 23px;
 }

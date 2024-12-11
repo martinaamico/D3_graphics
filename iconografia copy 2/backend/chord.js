@@ -449,7 +449,8 @@ function initializeChordChart(NameGene,matrix) {
     }
     function createArc(index, manual = false) {
         const providerName = NameGene[index];
-        console.log("nome :",providerName)
+        console.log("nome :", providerName);
+    
         g.filter(d => d.index === index)
             .append("path")
             .attr("class", "arc")
@@ -460,19 +461,55 @@ function initializeChordChart(NameGene,matrix) {
             .transition().duration(manual ? 100 : 200) 
             .style("opacity", 1)
             .on("end", () => {
-                g.filter(d => d.index === index)
-                    .append("text")
-                    .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
-                    .attr("dy", ".35em")
-                    .attr("class", "titles")
-                    .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
-                    .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
-                    .attr("opacity", 0)
-                    .transition().duration(manual ? 50 : 1000)
-                    .attr("opacity", 1)
-                    .text(providerName);
+                // Check if the text contains a space
+                if (providerName.includes(" ")) {
+                    const words = providerName.split(" ");
+                    const firstWord = words[0];
+                    const secondWord = words[1];
+    
+                    // Add first line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", "-.35em")  // Slightly move up for the first line
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(firstWord);
+    
+                    // Add second line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", ".75em")  // Move this down to create space between the lines
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(secondWord);
+                } else {
+                    // If no space, just render the single line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", ".35em")
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(providerName);
+                }
             });
     }
+    
+    
     function finalChord() {
         if(final)return;
         //button.text("PLAY").html("&#x25B6;"); // Icona di play
