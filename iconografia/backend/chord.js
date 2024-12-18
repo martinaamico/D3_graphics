@@ -53,36 +53,47 @@ function fade(opacity) {
     };
 }
 
-function initializeChordChart(NameGene,matrix) {
-    //let indexattuale=0;
+function initializeChordChart(NameGene, matrix) {
     let isCycleStarted = false; // Variabile per verificare se il ciclo è stato avviato
     let cycleSpeed = 6000; // Velocità di default in millisecondi
-    //let autoAdvance = null; // Intervallo per l'auto advance
-    const speedRange = document.getElementById('speedRange');
-    const speedLabel = document.getElementById('speedLabel');
+    const speedSelect = document.getElementById('speedSelect');
 
-    // Listener per modificare la velocità
-   // Aggiorna la velocità in base allo slider
-   speedRange.addEventListener('input', function () {
-    const speedMultiplier = parseFloat(speedRange.value); // Ottieni il valore dello slider
-    cycleSpeed = 6000 / speedMultiplier; // Aggiorna la velocità (base 6000 ms)
-    speedLabel.textContent = `${speedMultiplier}x`; // Aggiorna l'etichetta
-    console.log(`Velocità aggiornata: ${speedMultiplier}x (Durata: ${cycleSpeed} ms)`);
+    let progressBar = d3.select("#progressBar");
+    let progressBarContainer = d3.select("#progressBarContainer");
 
-    // Se un ciclo è già in corso, aggiorna l'intervallo senza fermarlo
-    if (autoAdvance) {
-        clearInterval(autoAdvance);
-        autoAdvance=null;
-        startAutoAdvance();
-        console.log("aggiornamento velocitò ciclo 1")
+    // Funzione per aggiornare la barra di progresso
+    function updateProgressBar(counter, dim) {
+        const maxProgress = dim * 2; // Il massimo valore è dim * 2
+        progressBar.attr("max", maxProgress).attr("value", counter);
     }
-    if (cycleInterval) {
-        clearInterval(cycleInterval);
-        cycleInterval=null;
-        startInfiniteCycle(index1);
-        console.log("aggiornamento velocitò ciclo 2")
+
+    // Mostra o nascondi la barra
+    function toggleProgressBar(show) {
+        progressBarContainer.style("display", show ? "block" : "none");
     }
-});
+
+
+    // Listener per cambiare la velocità dal menù a tendina
+    speedSelect.addEventListener('change', function () {
+        const speedMultiplier = parseFloat(speedSelect.value);
+        cycleSpeed = 6000 / speedMultiplier; // Calcola il nuovo intervallo
+        console.log(`Velocità aggiornata: ${speedMultiplier}x (Durata: ${cycleSpeed} ms)`);
+
+        // Aggiungi qui il codice per aggiornare i cicli attivi
+        if (autoAdvance) {
+            clearInterval(autoAdvance);
+            autoAdvance = null;
+            startAutoAdvance();
+            console.log("Aggiornamento velocità ciclo 1");
+        }
+        if (cycleInterval) {
+            clearInterval(cycleInterval);
+            cycleInterval = null;
+            startInfiniteCycle(index1);
+            console.log("Aggiornamento velocità ciclo 2");
+        }
+    });
+
     const dim=NameGene.length;
     const rainbowScale = d3.scaleSequential(d3.interpolateRainbow)
         .domain([0, dim - 1]); 
@@ -255,6 +266,7 @@ function initializeChordChart(NameGene,matrix) {
     });
     // Funzione per avviare l'avanzamento automatico
     function startAutoAdvance() {
+        toggleProgressBar(true);
         changeTopText("", 0, 0, 1);
         changeBottomText("", 0, 0, 1);
         if (autoAdvance) return;
@@ -280,6 +292,7 @@ function initializeChordChart(NameGene,matrix) {
             if (counter > previousCounter + 1) {
                 counter = previousCounter + 1;
             }
+            updateProgressBar(counter, dim); 
         }, cycleSpeed);
     }
     function showChord(sourceIndex, manual = false) {
@@ -307,7 +320,7 @@ function initializeChordChart(NameGene,matrix) {
     d3.select("#advance").on("click", function () {
         if (!isCycleStarted) return;
         //interruptCycle(); // Interrompe cicli o azioni automatiche
-        const previousCounter = counter;
+        //const previousCounter = counter;
         if (!final) {
             if (counter <= dim - 1) {
                 drawStep(counter, true);
@@ -318,6 +331,7 @@ function initializeChordChart(NameGene,matrix) {
             } else if (counter == dim * 2) {
                 finalChord();
             }
+            updateProgressBar(counter, dim);
         } else {
             console.log("indice avanti",index1)
             //nowait = true;
@@ -411,6 +425,8 @@ function initializeChordChart(NameGene,matrix) {
                 showChord(counter - dim - 1, true); // Mostra il precedente
                 console.log("indice >dim", counter)
             }
+
+            updateProgressBar(counter, dim);
         }
     });
     function removebackelement(index) {
@@ -474,7 +490,8 @@ function initializeChordChart(NameGene,matrix) {
             });
     }
     function finalChord() {
-        if(final)return;
+        if(final) return;  // Se final è già true, esci dalla funzione
+        toggleProgressBar(false);
         //button.text("PLAY").html("&#x25B6;"); // Icona di play
         //button.text("PAUSE").html("&#x23F8;"); // Icona di pausa
         //changeTopText("Per cambiare il flusso premi gli archi esterni del grafico o le foglie dell'albero a destra ", 0, 0, 1);

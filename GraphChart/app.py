@@ -13,6 +13,7 @@ app = Flask(__name__)
 # Configura il percorso di Tesseract OCR
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
+#si può cacellare questo punto 
 # Carica il modello pre-addestrato ResNet50
 model = ResNet50(weights='imagenet')
 
