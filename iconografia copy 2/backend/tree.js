@@ -18,9 +18,8 @@ function showNodeInfo(nodeData) {
                     <div class="gene-info">
                         <h3>${geneInfo.nome}</h3>
                         <p><strong>Spiegazione della funzione:</strong> ${geneInfo.spiegazione_della_funzione}</p>
-                        <p><strong>Scoperta:</strong> ${geneInfo.scoperta}</p>
-                        <p><strong>Posizione del filamento:</strong> ${geneInfo.posizione_del_filamento}</p>
-                        <p><strong>Importanza clinica:</strong> ${geneInfo.importanza_clinica}</p>
+                        <p><strong>Competenze richieste:</strong> ${geneInfo.competenze_richieste}</p>
+                        <p><strong>Test per assumere:</strong> ${geneInfo.test_per_assumere}</p>
                     </div>
                 `;
             } else {

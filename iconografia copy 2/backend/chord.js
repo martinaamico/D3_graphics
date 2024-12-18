@@ -53,47 +53,36 @@ function fade(opacity) {
     };
 }
 
-function initializeChordChart(NameGene, matrix) {
+function initializeChordChart(NameGene,matrix) {
+    //let indexattuale=0;
     let isCycleStarted = false; // Variabile per verificare se il ciclo è stato avviato
     let cycleSpeed = 6000; // Velocità di default in millisecondi
-    const speedSelect = document.getElementById('speedSelect');
+    //let autoAdvance = null; // Intervallo per l'auto advance
+    const speedRange = document.getElementById('speedRange');
+    const speedLabel = document.getElementById('speedLabel');
 
-    let progressBar = d3.select("#progressBar");
-    let progressBarContainer = d3.select("#progressBarContainer");
+    // Listener per modificare la velocità
+   // Aggiorna la velocità in base allo slider
+   speedRange.addEventListener('input', function () {
+    const speedMultiplier = parseFloat(speedRange.value); // Ottieni il valore dello slider
+    cycleSpeed = 6000 / speedMultiplier; // Aggiorna la velocità (base 6000 ms)
+    speedLabel.textContent = `${speedMultiplier}x`; // Aggiorna l'etichetta
+    console.log(`Velocità aggiornata: ${speedMultiplier}x (Durata: ${cycleSpeed} ms)`);
 
-    // Funzione per aggiornare la barra di progresso
-    function updateProgressBar(counter, dim) {
-        const maxProgress = dim * 2; // Il massimo valore è dim * 2
-        progressBar.attr("max", maxProgress).attr("value", counter);
+    // Se un ciclo è già in corso, aggiorna l'intervallo senza fermarlo
+    if (autoAdvance) {
+        clearInterval(autoAdvance);
+        autoAdvance=null;
+        startAutoAdvance();
+        console.log("aggiornamento velocitò ciclo 1")
     }
-
-    // Mostra o nascondi la barra
-    function toggleProgressBar(show) {
-        progressBarContainer.style("display", show ? "block" : "none");
+    if (cycleInterval) {
+        clearInterval(cycleInterval);
+        cycleInterval=null;
+        startInfiniteCycle(index1);
+        console.log("aggiornamento velocitò ciclo 2")
     }
-
-
-    // Listener per cambiare la velocità dal menù a tendina
-    speedSelect.addEventListener('change', function () {
-        const speedMultiplier = parseFloat(speedSelect.value);
-        cycleSpeed = 6000 / speedMultiplier; // Calcola il nuovo intervallo
-        console.log(`Velocità aggiornata: ${speedMultiplier}x (Durata: ${cycleSpeed} ms)`);
-
-        // Aggiungi qui il codice per aggiornare i cicli attivi
-        if (autoAdvance) {
-            clearInterval(autoAdvance);
-            autoAdvance = null;
-            startAutoAdvance();
-            console.log("Aggiornamento velocità ciclo 1");
-        }
-        if (cycleInterval) {
-            clearInterval(cycleInterval);
-            cycleInterval = null;
-            startInfiniteCycle(index1);
-            console.log("Aggiornamento velocità ciclo 2");
-        }
-    });
-
+});
     const dim=NameGene.length;
     const rainbowScale = d3.scaleSequential(d3.interpolateRainbow)
         .domain([0, dim - 1]); 
@@ -266,7 +255,6 @@ function initializeChordChart(NameGene, matrix) {
     });
     // Funzione per avviare l'avanzamento automatico
     function startAutoAdvance() {
-        toggleProgressBar(true);
         changeTopText("", 0, 0, 1);
         changeBottomText("", 0, 0, 1);
         if (autoAdvance) return;
@@ -292,7 +280,6 @@ function initializeChordChart(NameGene, matrix) {
             if (counter > previousCounter + 1) {
                 counter = previousCounter + 1;
             }
-            updateProgressBar(counter, dim); 
         }, cycleSpeed);
     }
     function showChord(sourceIndex, manual = false) {
@@ -320,7 +307,7 @@ function initializeChordChart(NameGene, matrix) {
     d3.select("#advance").on("click", function () {
         if (!isCycleStarted) return;
         //interruptCycle(); // Interrompe cicli o azioni automatiche
-        //const previousCounter = counter;
+        const previousCounter = counter;
         if (!final) {
             if (counter <= dim - 1) {
                 drawStep(counter, true);
@@ -331,7 +318,6 @@ function initializeChordChart(NameGene, matrix) {
             } else if (counter == dim * 2) {
                 finalChord();
             }
-            updateProgressBar(counter, dim);
         } else {
             console.log("indice avanti",index1)
             //nowait = true;
@@ -425,8 +411,6 @@ function initializeChordChart(NameGene, matrix) {
                 showChord(counter - dim - 1, true); // Mostra il precedente
                 console.log("indice >dim", counter)
             }
-
-            updateProgressBar(counter, dim);
         }
     });
     function removebackelement(index) {
@@ -465,7 +449,8 @@ function initializeChordChart(NameGene, matrix) {
     }
     function createArc(index, manual = false) {
         const providerName = NameGene[index];
-        console.log("nome :",providerName)
+        console.log("nome :", providerName);
+    
         g.filter(d => d.index === index)
             .append("path")
             .attr("class", "arc")
@@ -476,22 +461,57 @@ function initializeChordChart(NameGene, matrix) {
             .transition().duration(manual ? 100 : 200) 
             .style("opacity", 1)
             .on("end", () => {
-                g.filter(d => d.index === index)
-                    .append("text")
-                    .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
-                    .attr("dy", ".35em")
-                    .attr("class", "titles")
-                    .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
-                    .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
-                    .attr("opacity", 0)
-                    .transition().duration(manual ? 50 : 1000)
-                    .attr("opacity", 1)
-                    .text(providerName);
+                // Check if the text contains a space
+                if (providerName.includes(" ")) {
+                    const words = providerName.split(" ");
+                    const firstWord = words[0];
+                    const secondWord = words[1];
+    
+                    // Add first line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", "-.35em")  // Slightly move up for the first line
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(firstWord);
+    
+                    // Add second line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", ".75em")  // Move this down to create space between the lines
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(secondWord);
+                } else {
+                    // If no space, just render the single line
+                    g.filter(d => d.index === index)
+                        .append("text")
+                        .each(d => d.angle = (d.startAngle + d.endAngle) / 2)
+                        .attr("dy", ".35em")
+                        .attr("class", "titles")
+                        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+                        .attr("transform", d => `rotate(${d.angle * 180 / Math.PI - 90})translate(${innerRadius + 20})${d.angle > Math.PI ? "rotate(180)" : ""}`)
+                        .attr("opacity", 0)
+                        .transition().duration(manual ? 50 : 1000)
+                        .attr("opacity", 1)
+                        .text(providerName);
+                }
             });
     }
+    
+    
     function finalChord() {
-        if(final) return;  // Se final è già true, esci dalla funzione
-        toggleProgressBar(false);
+        if(final)return;
         //button.text("PLAY").html("&#x25B6;"); // Icona di play
         //button.text("PAUSE").html("&#x23F8;"); // Icona di pausa
         //changeTopText("Per cambiare il flusso premi gli archi esterni del grafico o le foglie dell'albero a destra ", 0, 0, 1);
